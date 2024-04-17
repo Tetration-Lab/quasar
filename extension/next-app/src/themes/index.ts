@@ -113,7 +113,7 @@ const theme = extendTheme({
       body: {
         height: "100dvh",
         overflowX: "hidden",
-        lineHeight: "base",
+        lineHeight: "normal",
         backgroundPosition: "0 -10vh",
         backgroundRepeat: "no-repeat",
         justifyContent: "center",

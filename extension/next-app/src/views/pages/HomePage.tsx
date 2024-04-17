@@ -13,7 +13,9 @@ export const HomePage = () => {
         <Button as={Link} href="/generate">
           Generate New Wallet
         </Button>
-        <Button>Import Seed Phrase</Button>
+        <Button as={Link} href="/import">
+          Import Seed Phrase
+        </Button>
       </Stack>
     </>
   );

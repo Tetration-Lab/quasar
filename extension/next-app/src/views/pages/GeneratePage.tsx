@@ -24,7 +24,7 @@ export const GeneratePage = () => {
 
   return (
     <Stack>
-      <Icon as={LuArrowLeft} onClick={() => router.push("/")} />
+      <Icon as={LuArrowLeft} onClick={() => router.back()} />
       <Heading size="lg">Generate New Wallet</Heading>
       <Text as="i">
         The mnemonic will be derived to{" "}
@@ -33,13 +33,18 @@ export const GeneratePage = () => {
       </Text>
       <Code rounded="md" fontSize="xs">
         <SimpleGrid columns={3} p={2} spacing={1}>
-          {mnemonic.split(" ").map((m) => (
-            <Text>{m}</Text>
+          {mnemonic.split(" ").map((m, i) => (
+            <Text key={i}>{m}</Text>
           ))}
         </SimpleGrid>
       </Code>
       <SimpleGrid columns={2} spacing={2}>
-        <Button size="sm" variant="outline" leftIcon={<Icon as={LuCopy} />}>
+        <Button
+          size="sm"
+          variant="outline"
+          leftIcon={<Icon as={LuCopy} />}
+          onClick={() => navigator.clipboard.writeText(mnemonic)}
+        >
           Copy
         </Button>
         <Button
@@ -51,7 +56,10 @@ export const GeneratePage = () => {
           Rerandomize
         </Button>
       </SimpleGrid>
-      <Divider my={2} />
+      <Text bg="error" color="white" p={0.5}>
+        PLEASE BACK UP YOUR MNEMONIC PHRASE YOU WILL LOSE ACCESS
+      </Text>
+      <Divider my={1} />
       <Heading size="md">Set Password</Heading>
       <Input type="password" onChange={(e) => setPassword(e.target.value)} />
       <Button>Generate Wallet</Button>
