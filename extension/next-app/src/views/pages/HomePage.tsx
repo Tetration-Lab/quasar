@@ -1,4 +1,4 @@
-import { Box, Button, Heading, Stack, Text } from "@chakra-ui/react";
+import { Box, Button, Heading, Image, Stack, Text } from "@chakra-ui/react";
 import { Section } from "../../components/common/Section";
 import Link from "next/link";
 
@@ -6,7 +6,7 @@ export const HomePage = () => {
   return (
     <>
       <Stack align="center" justify="center" h="100%">
-        <Heading>🛰️</Heading>
+        <Image src="/icon.png" alt="Quasar Logo" boxSize="80px" fill="black" />
         <Heading>Quasar</Heading>
         <Text>Quantum Secure Smart Account</Text>
         <Box h={4} />
