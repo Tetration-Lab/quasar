@@ -3,7 +3,7 @@ import { BoxProps, Container } from "@chakra-ui/react";
 export const Section = (props: BoxProps) => {
   return (
     <Container
-      w="300px"
+      w="350px"
       h="600px"
       mx="auto"
       py={{ base: 4, md: 10 }}

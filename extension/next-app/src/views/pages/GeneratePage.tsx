@@ -11,9 +11,10 @@ import {
   chakra,
 } from "@chakra-ui/react";
 import { english, generateMnemonic } from "viem/accounts";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { LuArrowLeft, LuCopy, LuShuffle } from "react-icons/lu";
 import { useRouter } from "next/router";
+import { useAcc } from "../../stores/useAcc";
 
 export const GeneratePage = () => {
   const router = useRouter();
@@ -22,6 +23,17 @@ export const GeneratePage = () => {
   const [password, setPassword] = useState("");
   const mnemonic = useMemo(() => generateMnemonic(english, 256), [nonce]);
 
+  const generate = useCallback(() => {
+    useAcc.setState({
+      account: {
+        mnemonic,
+        password,
+      },
+      isLocked: false,
+    });
+    router.push("/");
+  }, [mnemonic, password, router]);
+
   return (
     <Stack>
       <Icon as={LuArrowLeft} onClick={() => router.back()} />
@@ -29,7 +41,7 @@ export const GeneratePage = () => {
       <Text as="i">
         The mnemonic will be derived to{" "}
         <chakra.span as="b">Dilithium</chakra.span> keypair instead of
-        Ethereum's <chakra.span as="b">Secp256k1</chakra.span> keypair
+        Ethereum&apos;s <chakra.span as="b">Secp256k1</chakra.span> keypair
       </Text>
       <Code rounded="md" fontSize="xs">
         <SimpleGrid columns={3} p={2} spacing={1}>
@@ -62,7 +74,9 @@ export const GeneratePage = () => {
       <Divider my={1} />
       <Heading size="md">Set Password</Heading>
       <Input type="password" onChange={(e) => setPassword(e.target.value)} />
-      <Button>Generate Wallet</Button>
+      <Button onClick={generate} isDisabled={!password}>
+        Generate Wallet
+      </Button>
     </Stack>
   );
 };

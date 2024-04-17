@@ -1,10 +1,20 @@
 {
-  "name": "Next Chrome",
-  "description": "Next.js Chrome Extension starter",
-  "version": "0.0.1",
   "manifest_version": 3,
+  "version": "1.0.0",
+  "name": "Quasar",
+  "description": "Quantum Secure Smart Account",
   "action": {
-    "default_title": "Next.js app",
+    "default_title": "Quasar",
     "default_popup": "index.html"
-  }
+  },
+  "permissions": [
+    "activeTab",
+    "storage",
+    "alarms",
+    "unlimitedStorage",
+    "clipboardRead",
+    "clipboardWrite",
+    "contextMenus",
+    "scripting"
+  ]
 }

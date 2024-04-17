@@ -6,7 +6,12 @@ export const HomePage = () => {
   return (
     <>
       <Stack align="center" justify="center" h="100%">
-        <Image src="/icon.png" alt="Quasar Logo" boxSize="80px" fill="black" />
+        <Image
+          src="/next-assets/icon.png"
+          alt="Quasar Logo"
+          boxSize="80px"
+          fill="black"
+        />
         <Heading>Quasar</Heading>
         <Text>Quantum Secure Smart Account</Text>
         <Box h={4} />

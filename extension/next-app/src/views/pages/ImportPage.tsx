@@ -11,14 +11,30 @@ import {
   chakra,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { LuArrowLeft } from "react-icons/lu";
+import { useAcc } from "../../stores/useAcc";
 
 export const ImportPage = () => {
   const router = useRouter();
 
   const [mnemonicInput, setMnemonicInput] = useState("");
   const [password, setPassword] = useState("");
+
+  const imp = useCallback(() => {
+    const mnemonic = mnemonicInput.split(" ");
+    if (mnemonic.length !== 24) {
+      return;
+    }
+    useAcc.setState({
+      account: {
+        mnemonic: mnemonic.join(" "),
+        password,
+      },
+      isLocked: false,
+    });
+    router.push("/");
+  }, [mnemonicInput, password, router]);
 
   return (
     <Stack>
@@ -43,12 +59,18 @@ export const ImportPage = () => {
             color: "gray.400",
             fontSize: "xs",
           }}
+          onChange={(e) => setMnemonicInput(e.target.value)}
         />
       </Code>
       <Divider my={2} />
       <Heading size="md">Set Password</Heading>
       <Input type="password" onChange={(e) => setPassword(e.target.value)} />
-      <Button>Import Wallet</Button>
+      <Button
+        onClick={imp}
+        isDisabled={mnemonicInput.length === 0 || password.length === 0}
+      >
+        Import Wallet
+      </Button>
     </Stack>
   );
 };
