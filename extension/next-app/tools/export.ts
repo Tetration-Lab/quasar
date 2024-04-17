@@ -11,9 +11,15 @@ const manifestAddon = {
   version: "1.0.0",
   name: "Quasar",
   description: "Quantum Secure Smart Account",
+  icons: {
+    "444": "next-assets/icon.png",
+  },
   action: {
     default_title: "Quasar",
     default_popup: "index.html",
+    default_icon: {
+      "444": "next-assets/icon.png",
+    },
   },
   permissions: [
     "activeTab",
