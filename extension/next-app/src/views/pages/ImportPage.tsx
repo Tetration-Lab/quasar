@@ -33,7 +33,6 @@ export const ImportPage = () => {
       },
       isLocked: false,
     });
-    router.push("/");
   }, [mnemonicInput, password, router]);
 
   return (

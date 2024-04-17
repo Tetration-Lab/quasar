@@ -9,6 +9,7 @@ interface IAcc {
   };
   lock: () => void;
   unlock: (password: string) => boolean;
+  reset: () => void;
 }
 
 export const useAcc = create(
@@ -27,6 +28,7 @@ export const useAcc = create(
         }
         return false;
       },
+      reset: () => set({ isLocked: true, account: undefined }),
     }),
     {
       name: "acc-storage",

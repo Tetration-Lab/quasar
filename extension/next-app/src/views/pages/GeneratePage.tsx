@@ -31,7 +31,6 @@ export const GeneratePage = () => {
       },
       isLocked: false,
     });
-    router.push("/");
   }, [mnemonic, password, router]);
 
   return (

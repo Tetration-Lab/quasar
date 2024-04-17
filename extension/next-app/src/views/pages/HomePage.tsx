@@ -1,26 +1,41 @@
-import { Box, Button, Heading, Image, Stack, Text } from "@chakra-ui/react";
-import { Section } from "../../components/common/Section";
+import {
+  Box,
+  Button,
+  HStack,
+  Heading,
+  Icon,
+  IconButton,
+  Image,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import Link from "next/link";
+import { LuLock, LuTimerReset } from "react-icons/lu";
+import { useAcc } from "../../stores/useAcc";
 
 export const HomePage = () => {
+  const acc = useAcc();
+
   return (
     <>
-      <Stack align="center" justify="center" h="100%">
-        <Image
-          src="/next-assets/icon.png"
-          alt="Quasar Logo"
-          boxSize="80px"
-          fill="black"
-        />
-        <Heading>Quasar</Heading>
-        <Text>Quantum Secure Smart Account</Text>
-        <Box h={4} />
-        <Button as={Link} href="/generate">
-          Generate New Wallet
-        </Button>
-        <Button as={Link} href="/import">
-          Import Seed Phrase
-        </Button>
+      <Stack>
+        <HStack>
+          <Text>Welcome!</Text>
+          <IconButton
+            icon={<Icon as={LuLock} />}
+            aria-label="Lock"
+            size="sm"
+            variant="outline"
+            onClick={acc.lock}
+          />
+          <IconButton
+            icon={<Icon as={LuTimerReset} />}
+            aria-label="Reset"
+            size="sm"
+            variant="outline"
+            onClick={acc.reset}
+          />
+        </HStack>
       </Stack>
     </>
   );
