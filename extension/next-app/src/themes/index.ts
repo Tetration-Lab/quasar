@@ -102,8 +102,8 @@ const theme = extendTheme({
   components: {},
 
   fonts: {
-    heading: "Trispace",
-    body: "Trispace",
+    heading: "Space Grotesk",
+    body: "Space Grotesk",
   },
 
   breakpoints,
