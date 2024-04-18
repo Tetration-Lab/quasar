@@ -1,38 +1,7 @@
 /*global chrome*/
 import { create } from "zustand";
-import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
-
-const chromeEnabled = !!(
-  typeof chrome !== "undefined" &&
-  chrome.storage &&
-  chrome.storage.local
-);
-const chromeStorage: StateStorage = {
-  getItem: async (name: string): Promise<string | null> => {
-    if (chromeEnabled) {
-      const kv = await chrome.storage.local.get(name);
-      return kv[name];
-    } else {
-      return localStorage.getItem(name);
-    }
-  },
-  setItem: async (name: string, value: string): Promise<void> => {
-    if (chromeEnabled) {
-      await chrome.storage.local.set({
-        [name]: value,
-      });
-    } else {
-      localStorage.setItem(name, value);
-    }
-  },
-  removeItem: async (name: string): Promise<void> => {
-    if (chromeEnabled) {
-      await chrome.storage.local.remove(name);
-    } else {
-      localStorage.removeItem(name);
-    }
-  },
-};
+import { createJSONStorage, persist } from "zustand/middleware";
+import { chromeStorage } from "./chrome";
 
 interface IAcc {
   isLocked: boolean;
@@ -44,6 +13,8 @@ interface IAcc {
   unlock: (password: string) => boolean;
   reset: () => void;
   connectedWebsite?: string;
+  connect: (website: string) => void;
+  disconnect: () => void;
 }
 
 export const useAcc = create(
@@ -63,6 +34,12 @@ export const useAcc = create(
         return false;
       },
       reset: () => set({ isLocked: true, account: undefined }),
+      connect: (website: string) => {
+        set({ connectedWebsite: website });
+      },
+      disconnect: () => {
+        set({ connectedWebsite: undefined });
+      },
     }),
     {
       name: "acc-storage",

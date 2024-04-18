@@ -34,7 +34,7 @@ const manifestAddon = {
   ],
   host_permissions: ["*://*/*"],
   background: {
-    service_worker: "workers/main.js",
+    service_worker: "workers/sv.js",
     type: "module",
   },
   content_scripts: [
@@ -43,15 +43,24 @@ const manifestAddon = {
       all_frames: true,
       run_at: "document_start",
       js: ["workers/inject.js"],
+    },
+    {
+      matches: ["http://*/*", "https://*/*"],
+      all_frames: true,
+      run_at: "document_start",
+      js: ["workers/inpage.js"],
       world: "MAIN",
     },
   ],
   web_accessible_resources: [
     {
-      resources: ["workers/inject.js"],
+      resources: ["workers/inject.js", "workers/inpage.js"],
       matches: ["<all_urls>"],
     },
   ],
+  externally_connectable: {
+    matches: ["*://*/*"],
+  },
 };
 
 (async () => {

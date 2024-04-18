@@ -1,6 +1,4 @@
 import {
-  Box,
-  Button,
   HStack,
   Heading,
   Icon,
@@ -9,8 +7,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import Link from "next/link";
-import { LuLock, LuTimerReset } from "react-icons/lu";
+import { LuLock, LuTimerReset, LuUnplug } from "react-icons/lu";
 import { useAcc } from "../../stores/useAcc";
 import { NImage } from "../../constants/image";
 
@@ -44,6 +41,16 @@ export const HomePage = () => {
             size="sm"
             variant="outline"
             onClick={acc.reset}
+          />
+        </HStack>
+        <HStack>
+          <Text>Connected: {acc.connectedWebsite || "None"}</Text>
+          <IconButton
+            icon={<Icon as={LuUnplug} />}
+            aria-label="Disconnect"
+            size="sm"
+            variant="outline"
+            onClick={acc.disconnect}
           />
         </HStack>
       </Stack>
