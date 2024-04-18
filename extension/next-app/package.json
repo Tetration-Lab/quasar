@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "worker": "npx tsc --downlevelIteration --outDir cworkers -p workers",
+    "worker": "npx tsc --outDir cworkers -p workers",
     "build": "next build && next export && mv out/_next out/next && sed -i '' -e 's/\\/_next/\\.\\/next/g' out/**.html && mv out/**.html ../extension && rsync -va --delete-after out/next/ ../extension/next/ && rm -rf out && rsync -va --delete-after public/next-assets ../extension/",
     "build:linux": "next build && next export && mv out/_next out/next && sed -i 's/\\/_next/\\.\\/next/g' out/**.html && mv out/index.html ../extension && rsync -va --delete-after out/next/ ../extension/next/ && rm -rf out && rsync -va --delete-after public/next-assets ../extension/",
     "start": "next start",
@@ -14,7 +14,7 @@
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
-    "framer-motion": "^11.1.2",
+    "framer-motion": "^11.1.3",
     "next": "13.4.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
@@ -25,9 +25,9 @@
   },
   "devDependencies": {
     "@types/chrome": "^0.0.266",
-    "@types/node": "20.2.3",
+    "@types/node": "^20.12.7",
     "@types/react": "^18.2.79",
-    "@types/react-dom": "18.2.4",
+    "@types/react-dom": "^18.2.25",
     "eslint": "8.21.0",
     "eslint-config-next": "12.2.3",
     "typescript": "4.7.4"

@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
     "isolatedModules": false,
-    "types": []
+    "types": [],
+    "target": "esnext",
+    "moduleResolution": "node",
+    "module": "esnext"
   },
   "include": ["."]
 }
