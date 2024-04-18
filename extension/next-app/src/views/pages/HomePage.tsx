@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import { LuLock, LuTimerReset } from "react-icons/lu";
 import { useAcc } from "../../stores/useAcc";
+import { NImage } from "../../constants/image";
 
 export const HomePage = () => {
   const acc = useAcc();
@@ -19,6 +20,15 @@ export const HomePage = () => {
   return (
     <>
       <Stack>
+        <HStack>
+          <Image
+            src={NImage.ICON}
+            alt="Quasar Logo"
+            boxSize="20px"
+            fill="black"
+          />
+          <Heading size="sm">Quasar</Heading>
+        </HStack>
         <HStack>
           <Text>Welcome!</Text>
           <IconButton

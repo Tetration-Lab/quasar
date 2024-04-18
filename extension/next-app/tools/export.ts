@@ -1,7 +1,7 @@
 // tools/convertNextJsExportIntoBrowserExtension.ts
 
 import { resolve } from "path";
-import { rename, rm, readdir, writeFile, readFile } from "fs/promises";
+import { rename, rm, readdir, writeFile, readFile, cp } from "fs/promises";
 
 const nextJsOutDirectory = "out";
 const extensionDirectory = "../extension";
@@ -22,6 +22,7 @@ const manifestAddon = {
     },
   },
   permissions: [
+    "favicon",
     "activeTab",
     "storage",
     "alarms",
@@ -30,6 +31,26 @@ const manifestAddon = {
     "clipboardWrite",
     "contextMenus",
     "scripting",
+  ],
+  host_permissions: ["*://*/*"],
+  background: {
+    service_worker: "workers/main.js",
+    type: "module",
+  },
+  content_scripts: [
+    {
+      matches: ["http://*/*", "https://*/*"],
+      all_frames: true,
+      run_at: "document_start",
+      js: ["workers/inject.js"],
+      world: "MAIN",
+    },
+  ],
+  web_accessible_resources: [
+    {
+      resources: ["workers/inject.js"],
+      matches: ["<all_urls>"],
+    },
   ],
 };
 
@@ -92,6 +113,9 @@ const manifestAddon = {
   // Move processed export to extension folder
   console.log(`Creating extension from next build...`);
   await rename(nextJsOutDirectory, extensionDirectory);
+
+  console.log("Copying worker files...");
+  await rename("cworkers", `${extensionDirectory}/workers`);
 
   // Instruct what's next
   console.log(

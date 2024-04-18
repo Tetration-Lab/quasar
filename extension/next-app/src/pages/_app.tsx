@@ -3,6 +3,7 @@ import type { AppProps } from "next/app";
 import { ChakraProvider } from "@chakra-ui/react";
 import theme from "../themes";
 import { Section } from "../components/common/Section";
+import Head from "next/head";
 
 const App = ({ Component, pageProps }: AppProps) => {
   const [showChild, setShowChild] = useState(false);
@@ -13,6 +14,10 @@ const App = ({ Component, pageProps }: AppProps) => {
 
   return (
     <>
+      <Head>
+        <title>Quasar</title>
+        <meta name="description" content="Quantum Secure Smart Account" />
+      </Head>
       {typeof window === "undefined" || !showChild ? (
         <></>
       ) : (

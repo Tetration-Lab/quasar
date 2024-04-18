@@ -67,7 +67,7 @@ export const GeneratePage = () => {
           Rerandomize
         </Button>
       </SimpleGrid>
-      <Text bg="error" color="white" p={0.5}>
+      <Text bg="error" color="white" p={1} fontWeight="bold">
         PLEASE BACK UP YOUR MNEMONIC PHRASE YOU WILL LOSE ACCESS
       </Text>
       <Divider my={1} />

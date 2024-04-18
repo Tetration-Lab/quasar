@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { useAcc } from "../../stores/useAcc";
 import { useState } from "react";
+import { NImage } from "../../constants/image";
 
 export const LandingPage = () => {
   const acc = useAcc();
@@ -18,7 +19,7 @@ export const LandingPage = () => {
     <>
       <Stack align="center" justify="center" h="100%">
         <Image
-          src="/next-assets/icon.png"
+          src={NImage.ICON}
           alt="Quasar Logo"
           boxSize="80px"
           fill="black"
