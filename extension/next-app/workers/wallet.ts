@@ -1,5 +1,14 @@
-import { Address, BlockTag, createPublicClient, http } from "viem";
-import { getNetwork } from "./storage";
+import {
+  Address,
+  BlockTag,
+  Hex,
+  createPublicClient,
+  fromHex,
+  http,
+  toBytes,
+  toHex,
+} from "viem";
+import { getMnemonic, getNetwork } from "./storage";
 
 export const evmCall = async (params: any[]) => {
   const tx = {} as {
@@ -34,4 +43,13 @@ export const evmCall = async (params: any[]) => {
     blockTag: tx.blockTag as BlockTag,
   });
   return result.data;
+};
+
+export const signMessage = async (hex: string) => {
+  const mnemonic = await getMnemonic();
+  const dilithium = await import("pqc_dilithium");
+  const keys = dilithium.Keys.derive(toBytes(mnemonic));
+  const bytes = keys.sign_bytes(fromHex(hex as Hex, "bytes"));
+  const signature = toHex(bytes);
+  return signature;
 };

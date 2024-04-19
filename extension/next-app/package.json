@@ -11,6 +11,7 @@
     "extension": "next build && yarn worker && ts-node tools/export.ts"
   },
   "dependencies": {
+    "pqc_dilithium": "../dilithium",
     "@chakra-ui/react": "^2.8.2",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",

@@ -1,6 +1,7 @@
 module.exports = {
   experiments: {
     outputModule: true,
+    asyncWebAssembly: true,
   },
   resolve: {
     extensions: [".ts", ".js"],
@@ -14,7 +15,9 @@ module.exports = {
     filename: "[name].js",
     enabledLibraryTypes: ["module"],
     libraryTarget: "module",
+    chunkFormat: "module",
   },
+  target: "webworker",
   module: {
     rules: [
       {

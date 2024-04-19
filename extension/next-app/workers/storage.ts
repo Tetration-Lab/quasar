@@ -29,3 +29,7 @@ export const getAddress = async (): Promise<string> => {
 export const getNetwork = async (): Promise<Chain | undefined> => {
   return await storageGetMain().then((res) => res?.connectedNetwork);
 };
+
+export const getMnemonic = async (): Promise<string> => {
+  return await storageGetMain().then((res) => res?.account?.mnemonic);
+};

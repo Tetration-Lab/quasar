@@ -2,7 +2,7 @@
 /// <reference types="viem"/>
 
 import { getAddress, getNetwork, isWebsiteConnected } from "./storage";
-import { evmCall } from "./wallet";
+import { evmCall, signMessage } from "./wallet";
 
 interface RequestArgument {
   method: string;
@@ -23,6 +23,38 @@ const userReject = {} as Record<string, (() => any) | undefined>;
 const userApprove = {} as Record<string, ((a: unknown) => any) | undefined>;
 const rIdWin = {} as Record<string, string | undefined>;
 const rIdData = {} as Record<string, any | undefined>;
+
+const connectWalletPopup = async (url: string, rid: string) => {
+  return new Promise<boolean>(async (resolve, reject) => {
+    const win = await chrome.windows.create({
+      width: 350,
+      height: 600,
+      url: `connect.html?url=${url}&rid=${rid}`,
+      type: "popup",
+    });
+
+    userReject[String(win.id)] = reject;
+    userApprove[String(win.id)] = resolve;
+    rIdWin[String(win.id)] = String(rid);
+    rIdData[String(win.id)] = {};
+  });
+};
+
+const signMessagePopup = async (hex: string, rid: string) => {
+  return new Promise<boolean>(async (resolve, reject) => {
+    const win = await chrome.windows.create({
+      url: `sign.html?hex=${hex}&rid=${rid}`,
+      type: "popup",
+      width: 350,
+      height: 600,
+    });
+
+    userReject[String(win.id)] = reject;
+    userApprove[String(win.id)] = resolve;
+    rIdWin[String(win.id)] = String(rid);
+    rIdData[String(win.id)] = {};
+  });
+};
 
 chrome.runtime.onMessage.addListener(
   (message: RequestArgument, sender, sendResponse) => {
@@ -53,24 +85,61 @@ chrome.runtime.onMessage.addListener(
             }
             break;
           }
+          case "personal_sign": {
+            const url = new URL(message.website);
+            let isConnected = await isWebsiteConnected(url.origin);
+            if (!isConnected) {
+              isConnected = await connectWalletPopup(
+                url.origin,
+                message.resId || "ra"
+              );
+            }
+
+            if (!isConnected) {
+              sendResponse({
+                error: true,
+                code: rpcError.USER_REJECTED,
+                message: "User rejected",
+              });
+              return;
+            }
+
+            const data = String(message?.params?.[0] ?? "");
+            const addr = String(message?.params?.[1] ?? "");
+            const connectedAddr = await getAddress();
+
+            if (addr !== connectedAddr) {
+              sendResponse({
+                error: true,
+                code: rpcError.INTERNAL_ERROR,
+                message: "Invalid address",
+              });
+              return;
+            }
+
+            const isSigned = await signMessagePopup(
+              data,
+              message.resId || "ra"
+            );
+
+            if (!isSigned) {
+              sendResponse({
+                error: true,
+                code: rpcError.USER_REJECTED,
+                message: "User rejected",
+              });
+              return;
+            }
+
+            sendResponse(await signMessage(data));
+          }
           case "eth_requestAccounts": {
             const url = new URL(message.website);
             let isConnected = await isWebsiteConnected(url.origin);
             if (!isConnected) {
-              isConnected = await new Promise<boolean>(
-                async (resolve, reject) => {
-                  const win = await chrome.windows.create({
-                    width: 350,
-                    height: 600,
-                    url: `connect.html?url=${url.origin}&rid=${message.resId}`,
-                    type: "popup",
-                  });
-
-                  userReject[String(win.id)] = reject;
-                  userApprove[String(win.id)] = resolve;
-                  rIdWin[String(win.id)] = String(message.resId);
-                  rIdData[String(win.id)] = {};
-                }
+              isConnected = await connectWalletPopup(
+                url.origin,
+                message.resId || "ra"
               );
             }
 

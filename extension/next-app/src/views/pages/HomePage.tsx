@@ -1,7 +1,14 @@
 import {
+  Button,
   Card,
   Circle,
+  Code,
   Divider,
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerHeader,
+  DrawerOverlay,
   HStack,
   Heading,
   Icon,
@@ -11,6 +18,7 @@ import {
   Stack,
   Text,
   chakra,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { LuLock, LuTimerReset, LuUnplug } from "react-icons/lu";
 import { useAcc } from "../../stores/useAcc";
@@ -19,10 +27,11 @@ import { SelectChainMenu } from "../../components/common/SelectChainMenu";
 
 export const HomePage = () => {
   const acc = useAcc();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <>
-      <Stack>
+      <Stack height="100%">
         <HStack>
           <Image
             src={NImage.ICON}
@@ -102,7 +111,26 @@ export const HomePage = () => {
             </Text>
           </Stack>
         </Stack>
+
+        <Spacer />
+
+        <HStack>
+          <Button onClick={onOpen} size="sm">
+            View Dilithium Public Keyy
+          </Button>
+        </HStack>
       </Stack>
+      <Drawer placement="bottom" onClose={onClose} isOpen={isOpen}>
+        <DrawerOverlay />
+        <DrawerContent h="50%">
+          <DrawerHeader>Dilithium Public Key</DrawerHeader>
+          <DrawerBody>
+            <Code p={2} rounded="md" whiteSpace="pre-wrap" w="full">
+              {JSON.stringify(JSON.parse(acc.account.epk), null, 2)}
+            </Code>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 };

@@ -18,18 +18,16 @@ import { useAcc } from "../../stores/useAcc";
 
 export const GeneratePage = () => {
   const router = useRouter();
+  const acc = useAcc();
 
   const [nonce, setNonce] = useState(0);
   const [password, setPassword] = useState("");
   const mnemonic = useMemo(() => generateMnemonic(english, 256), [nonce]);
 
   const generate = useCallback(() => {
-    useAcc.setState({
-      account: {
-        mnemonic,
-        password,
-      },
-      isLocked: false,
+    acc.setAccount({
+      mnemonic,
+      password,
     });
   }, [mnemonic, password, router]);
 
