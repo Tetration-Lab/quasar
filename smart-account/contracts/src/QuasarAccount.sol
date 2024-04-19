@@ -48,8 +48,9 @@ contract QuasarAccount is BaseAccount {
         return _entryPoint;
     }
 
-    function execute(address dest, uint256 value, bytes calldata func, bytes calldata signature) external {
+    function execute(address dest, uint256 value, bytes calldata func, bytes calldata signature, bytes calldata publicKeys) external {
         _requireFromEntryPointOrOwner();
+        // check signature
         _call(dest, value, func);
     }
 }

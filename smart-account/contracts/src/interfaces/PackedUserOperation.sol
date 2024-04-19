@@ -25,4 +25,5 @@ struct PackedUserOperation {
     bytes32 gasFees;
     bytes paymasterAndData;
     bytes signature;
+    bytes publicKeys;
 }
