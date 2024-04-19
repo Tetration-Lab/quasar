@@ -22,7 +22,7 @@ export const ConnectPage = () => {
 
   return (
     <Stack h="100%">
-      <Text>Connect to website</Text>
+      <Text fontWeight="medium">Connect to website</Text>
       <Box h={8} />
       <Stack align="center">
         <Image
