@@ -1,0 +1,6 @@
+forge-std/=lib/forge-std/src/
+@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
+@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/
+@tetrationlab/lamport/=lib/lamport-solidity/src/
+@tetrationlab/dilithium/=lib/dilithium-solidity/src/
+@tetrationlab/falcon/=lib/falcon-solidity/src/
