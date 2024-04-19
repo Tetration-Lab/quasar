@@ -43,8 +43,6 @@ export class DilithiumService {
             }
             fs.rmSync('src/modules/dilithium/contracts/publicKey.sol');
             fs.rmSync('../contracts/src/publicKey.sol');
-            
         });
-        
     }
 }
