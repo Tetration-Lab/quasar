@@ -2,6 +2,8 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { chromeStorage } from "./chrome";
+import { chains } from "../constants/web3";
+import { Chain } from "viem";
 
 interface IAcc {
   isLocked: boolean;
@@ -15,6 +17,7 @@ interface IAcc {
   connectedWebsite?: string;
   connect: (website: string) => void;
   disconnect: () => void;
+  connectedChain?: Chain;
 }
 
 export const useAcc = create(
@@ -37,6 +40,7 @@ export const useAcc = create(
       connect: (website: string) => {
         set({ connectedWebsite: website });
       },
+      connectedNetwork: chains[0],
       disconnect: () => {
         set({ connectedWebsite: undefined });
       },

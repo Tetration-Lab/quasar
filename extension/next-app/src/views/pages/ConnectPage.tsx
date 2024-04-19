@@ -10,6 +10,7 @@ import {
 import { useRouter } from "next/router";
 import { approve, reject } from "../../stores/chrome";
 import { useAcc } from "../../stores/useAcc";
+import { RandomAvatar } from "react-random-avatars";
 
 export const ConnectPage = () => {
   const router = useRouter();
@@ -25,7 +26,12 @@ export const ConnectPage = () => {
       </HStack>
       <Box h={8} />
       <Stack align="center">
-        <Image src={`${url.origin}/favicon.ico`} boxSize="50px" />
+        <Image
+          src={`${url.origin}/favicon.ico`}
+          boxSize="50px"
+          fallback={<RandomAvatar name={url.origin} size={50} mode="pattern" />}
+          rounded="full"
+        />
         <Text fontWeight="medium" fontSize="xl">
           {url.origin}
         </Text>

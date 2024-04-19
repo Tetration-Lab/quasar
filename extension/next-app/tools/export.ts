@@ -1,10 +1,9 @@
-// tools/convertNextJsExportIntoBrowserExtension.ts
-
 import { resolve } from "path";
 import { rename, rm, readdir, writeFile, readFile, cp } from "fs/promises";
 
 const nextJsOutDirectory = "out";
 const extensionDirectory = "../extension";
+const workersDirectory = "workers/dist";
 
 const manifestAddon = {
   manifest_version: 3,
@@ -54,13 +53,25 @@ const manifestAddon = {
   ],
   web_accessible_resources: [
     {
-      resources: ["workers/inject.js", "workers/inpage.js"],
+      resources: ["workers/inpage.js", "workers/inject.js"],
       matches: ["<all_urls>"],
     },
   ],
   externally_connectable: {
     matches: ["*://*/*"],
   },
+};
+
+const getFilesInDirectoryRecursively = async (directory) => {
+  const dirents = await readdir(directory, { withFileTypes: true });
+
+  const files = await Promise.all(
+    dirents.map((dirent) => {
+      const res = resolve(directory, dirent.name);
+      return dirent.isDirectory() ? getFilesInDirectoryRecursively(res) : res;
+    })
+  );
+  return Array.prototype.concat(...files);
 };
 
 (async () => {
@@ -91,27 +102,7 @@ const manifestAddon = {
   );
 
   // Update manifest with extension specific parameters
-  //console.log("Updating manifest file...");
-  //const originalManifest = JSON.parse(
-  //(await readFile(`${nextJsOutDirectory}/manifest.json`, "utf8")).toString()
-  //);
-
-  /* Icons go from array format to object format
-   * Accepted format: https://developer.mozilla.org/en-US/docs/Web/Manifest/icons
-   * Produced format: https://developer.chrome.com/docs/extensions/mv3/manifest/icons/
-   */
-  //let icons = originalManifest.icons;
-  //if (Array.isArray(icons) && !manifestAddon.hasOwnProperty("icons")) {
-  //console.log("Reformatting icons array to extension manifest format...");
-  //icons = icons.reduce((result, { src, sizes }) => {
-  //const size = sizes.split("x")[0]; // '32x32' becomes '32'
-  //result[size] = src; // "32": "path/to/file"
-
-  //return result;
-  //}, {});
-  //console.log(icons);
-  //}
-
+  console.log("Updating manifest file...");
   const manifest = { ...manifestAddon };
   await writeFile(
     `${nextJsOutDirectory}/manifest.json`,
@@ -123,23 +114,11 @@ const manifestAddon = {
   console.log(`Creating extension from next build...`);
   await rename(nextJsOutDirectory, extensionDirectory);
 
-  console.log("Copying worker files...");
-  await rename("cworkers", `${extensionDirectory}/workers`);
+  console.log("Moving workers...");
+  await rename(`${workersDirectory}`, `${extensionDirectory}/workers`);
 
   // Instruct what's next
   console.log(
     `\nDone.\n\nLoad "${extensionDirectory}" folder into any Chromium browser as an extension to try it.`
   );
 })();
-
-const getFilesInDirectoryRecursively = async (directory) => {
-  const dirents = await readdir(directory, { withFileTypes: true });
-
-  const files = await Promise.all(
-    dirents.map((dirent) => {
-      const res = resolve(directory, dirent.name);
-      return dirent.isDirectory() ? getFilesInDirectoryRecursively(res) : res;
-    })
-  );
-  return Array.prototype.concat(...files);
-};

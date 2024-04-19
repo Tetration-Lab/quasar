@@ -517,5 +517,5 @@ const injectWallet = (win: any) => {
   );
 };
 
-injectWallet(this);
+injectWallet(window);
 loadEIP1193Provider(eth);

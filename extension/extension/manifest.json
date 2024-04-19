@@ -59,8 +59,8 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "workers/inject.js",
-        "workers/inpage.js"
+        "workers/inpage.js",
+        "workers/inject.js"
       ],
       "matches": [
         "<all_urls>"

@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "isolatedModules": false
+    "isolatedModules": false,
+    "lib": ["ES2021"]
   },
   "include": ["."]
 }

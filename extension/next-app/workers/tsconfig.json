@@ -2,9 +2,11 @@
   "compilerOptions": {
     "isolatedModules": false,
     "types": [],
-    "target": "esnext",
-    "moduleResolution": "node",
-    "module": "esnext"
+    "moduleResolution": "Node",
+    "module": "ESNext",
+    "target": "ES2021",
+    "lib": ["ES2022", "DOM"],
+    "skipLibCheck": true
   },
   "include": ["."]
 }

@@ -1,4 +1,9 @@
 /// <reference types="chrome"/>
+/// <reference types="viem"/>
+
+import { getAddress, getNetwork, isWebsiteConnected } from "./storage";
+import { evmCall } from "./wallet";
+
 interface RequestArgument {
   method: string;
   type?: string;
@@ -7,29 +12,6 @@ interface RequestArgument {
   website?: string;
   data?: any;
 }
-
-const storageSave = async (key: string, value: any): Promise<void> => {
-  await chrome.storage.local.set({ [key]: value });
-};
-
-const storageGet = async (key: string): Promise<any> => {
-  return JSON.parse(await chrome.storage.local.get(key).then((res) => res[key]))
-    .state;
-};
-
-const isWebsiteConnected = async (website: string): Promise<boolean> => {
-  const storage = await storageGet("acc-storage");
-  const connected = storage.connectedWebsite as string | undefined;
-  return connected === website;
-};
-
-const getAddress = async (): Promise<string> => {
-  return "0x0000000000000000000000000000000000000008";
-};
-
-const getNetwork = async (): Promise<number> => {
-  return 1;
-};
 
 const rpcError = {
   USER_REJECTED: 4001,
@@ -58,6 +40,19 @@ chrome.runtime.onMessage.addListener(
       } else {
         // ETH API
         switch (message.method) {
+          case "eth_call": {
+            try {
+              sendResponse(await evmCall(message?.params ?? []));
+            } catch (e) {
+              sendResponse({
+                error: true,
+                code: rpcError.USER_REJECTED,
+                message: "No network or user selected",
+              });
+              console.warn("Error: eth_call", e);
+            }
+            break;
+          }
           case "eth_requestAccounts": {
             const url = new URL(message.website);
             let isConnected = await isWebsiteConnected(url.origin);
@@ -89,6 +84,32 @@ chrome.runtime.onMessage.addListener(
               });
             }
 
+            break;
+          }
+          case "eth_accounts": {
+            const url = new URL(message.website);
+            const isConnected = await isWebsiteConnected(url.origin);
+            if (isConnected) {
+              sendResponse([await getAddress()]);
+            } else {
+              sendResponse({
+                error: true,
+                code: rpcError.USER_REJECTED,
+                message: "Not connected",
+              });
+            }
+          }
+          case "eth_chainId": {
+            const chainId = await getNetwork();
+            if (chainId) {
+              sendResponse(`0x${chainId.id.toString(16)}`);
+            } else {
+              sendResponse({
+                error: true,
+                code: rpcError.INTERNAL_ERROR,
+                message: "Not connected",
+              });
+            }
             break;
           }
           case "wallet_approve": {
