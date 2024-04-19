@@ -17,6 +17,7 @@
     "crypto-browserify": "^3.12.0",
     "framer-motion": "^11.1.3",
     "next": "13.4.3",
+    "numbro": "^2.5.0",
     "process": "^0.11.10",
     "react": "18.2.0",
     "react-dom": "18.2.0",

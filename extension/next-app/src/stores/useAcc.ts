@@ -17,7 +17,8 @@ interface IAcc {
   connectedWebsite?: string;
   connect: (website: string) => void;
   disconnect: () => void;
-  connectedChain?: Chain;
+  connectedNetwork: Chain;
+  switchNetwork: (chain: Chain) => void;
 }
 
 export const useAcc = create(
@@ -40,9 +41,12 @@ export const useAcc = create(
       connect: (website: string) => {
         set({ connectedWebsite: website });
       },
-      connectedNetwork: chains[0],
       disconnect: () => {
         set({ connectedWebsite: undefined });
+      },
+      connectedNetwork: chains[0],
+      switchNetwork: (chain: Chain) => {
+        set({ connectedNetwork: chain });
       },
     }),
     {

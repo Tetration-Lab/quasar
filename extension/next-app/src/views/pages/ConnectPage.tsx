@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Divider,
   HStack,
   Image,
   Spacer,
@@ -21,9 +22,7 @@ export const ConnectPage = () => {
 
   return (
     <Stack h="100%">
-      <HStack>
-        <Text>Connect to DApp</Text>
-      </HStack>
+      <Text>Connect to website</Text>
       <Box h={8} />
       <Stack align="center">
         <Image
@@ -36,12 +35,34 @@ export const ConnectPage = () => {
           {url.origin}
         </Text>
       </Stack>
+      <Divider my={2} />
+      <Text>This website will be able to</Text>
+      <Stack
+        align="center"
+        fontWeight="medium"
+        textAlign="center"
+        sx={{
+          "& > *": {
+            p: 2,
+            rounded: "md",
+            bg: "orange.100",
+            border: "2px solid",
+            borderColor: "orange.200",
+            w: "full",
+          },
+        }}
+      >
+        <Text>View your address</Text>
+        <Text>Request your signature</Text>
+        <Text>Request your transaction</Text>
+      </Stack>
       <Spacer />
       <Button
         onClick={() => {
           acc.connect(url.origin);
           approve(rId);
         }}
+        colorScheme="green"
       >
         Connect
       </Button>
