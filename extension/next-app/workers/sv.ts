@@ -43,7 +43,7 @@ const rIdWin = {} as Record<string, string | undefined>;
 const rIdData = {} as Record<string, any | undefined>;
 
 chrome.runtime.onMessage.addListener(
-  async (message: RequestArgument, sender, sendResponse) => {
+  (message: RequestArgument, sender, sendResponse) => {
     if (chrome.runtime.lastError) {
       console.info("Error receiving message:", chrome.runtime.lastError);
     }

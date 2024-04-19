@@ -47,7 +47,7 @@ window.addEventListener("message", (event) => {
       chrome?.runtime?.sendMessage(event.data.data.data, (res) => {
         if (chrome.runtime.lastError) {
           console.warn(
-            "LOC1 LISTENER: Error sending message:",
+            "LOC1: Error sending message:",
             chrome.runtime.lastError
           );
         }
@@ -82,8 +82,8 @@ window.addEventListener("message", (event) => {
             result: {
               error: true,
               message:
-                "ClearWallet: Unknown method requested " +
-                  event?.data?.data?.data?.method ?? "",
+                "Unknown method requested " + event?.data?.data?.data?.method ??
+                "",
             },
           },
         },

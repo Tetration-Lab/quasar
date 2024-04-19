@@ -26,7 +26,7 @@ const userReject = {};
 const userApprove = {};
 const rIdWin = {};
 const rIdData = {};
-chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (chrome.runtime.lastError) {
         console.info("Error receiving message:", chrome.runtime.lastError);
     }

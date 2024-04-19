@@ -46,7 +46,7 @@ window.addEventListener("message", (event) => {
             event.data.data.data.method = event?.data?.data?.method ?? "";
             chrome?.runtime?.sendMessage(event.data.data.data, (res) => {
                 if (chrome.runtime.lastError) {
-                    console.warn("LOC1 LISTENER: Error sending message:", chrome.runtime.lastError);
+                    console.warn("LOC1: Error sending message:", chrome.runtime.lastError);
                 }
                 const id = Number(event.data.resId.replace(/[A-Za-z]/g, "").slice(0, 10));
                 const data = {
@@ -76,8 +76,8 @@ window.addEventListener("message", (event) => {
                     data: {
                         result: {
                             error: true,
-                            message: "ClearWallet: Unknown method requested " +
-                                event?.data?.data?.data?.method ?? "",
+                            message: "Unknown method requested " + event?.data?.data?.data?.method ??
+                                "",
                         },
                     },
                 },
