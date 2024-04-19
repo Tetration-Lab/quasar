@@ -12,6 +12,7 @@ import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import { useAcc } from "../../stores/useAcc";
 import { RandomAvatar } from "react-random-avatars";
+import { approve, reject } from "../../stores/chrome";
 
 const MessageDivider = () => {
   return (
@@ -27,6 +28,7 @@ export const SignPage = () => {
   const router = useRouter();
   const acc = useAcc();
 
+  const rId = router.query.rid as string;
   const hexMessage = router.query.hex as string; // 0x prefix
   const message = useMemo(() => {
     try {
@@ -94,8 +96,15 @@ export const SignPage = () => {
           },
         }}
       >
-        <Button colorScheme="green">Sign</Button>
-        <Button>Cancel</Button>
+        <Button
+          colorScheme="green"
+          onClick={() => {
+            approve(rId);
+          }}
+        >
+          Sign
+        </Button>
+        <Button onClick={() => reject(rId)}>Cancel</Button>
       </HStack>
     </Stack>
   );
