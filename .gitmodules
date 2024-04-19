@@ -10,3 +10,6 @@
 [submodule "smart-account/contracts/lib/lamport-solidity"]
 	path = smart-account/contracts/lib/lamport-solidity
 	url = https://github.com/Tetration-Lab/lamport-solidity
+[submodule "smart-account/contracts/lib/dilithium-solidity"]
+	path = smart-account/contracts/lib/dilithium-solidity
+	url = https://github.com/Tetration-Lab/dilithium-solidity
