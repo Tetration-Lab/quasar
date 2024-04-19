@@ -9,46 +9,46 @@ contract VotingEscrowTest is Test {
     QuasarAccount account;
     IEntryPoint entryPoint;
 
-    function _setupUserOp(
-        uint256 _signerPKey,
-        bytes memory _initCode,
-        bytes memory _callDataForEntrypoint
-    ) internal returns (UserOperation[] memory ops) {
-        uint256 nonce = entrypoint.getNonce(sender, 0);
+    // function _setupUserOp(
+    //     uint256 _signerPKey,
+    //     bytes memory _initCode,
+    //     bytes memory _callDataForEntrypoint
+    // ) internal returns (UserOperation[] memory ops) {
+    //     uint256 nonce = entrypoint.getNonce(sender, 0);
 
-        // Get user op fields
-        PackedUserOperation memory op = PackedUserOperation({
-            sender: sender,
-            nonce: nonce,
-            initCode: _initCode,
-            callData: _callDataForEntrypoint,
-            accountGasLimits: 500_000,
-            verificationGasLimit: 500_000,
-            preVerificationGas: 500_000,
-            maxFeePerGas: 0,
-            maxPriorityFeePerGas: 0,
-            paymasterAndData: bytes(""),
-            signature: bytes("")
-        });
+    //     // // Get user op fields
+    //     // PackedUserOperation memory op = PackedUserOperation({
+    //     //     sender: sender,
+    //     //     nonce: nonce,
+    //     //     initCode: _initCode,
+    //     //     callData: _callDataForEntrypoint,
+    //     //     accountGasLimits: 500_000,
+    //     //     verificationGasLimit: 500_000,
+    //     //     preVerificationGas: 500_000,
+    //     //     maxFeePerGas: 0,
+    //     //     maxPriorityFeePerGas: 0,
+    //     //     paymasterAndData: bytes(""),
+    //     //     signature: bytes("")
+    //     // });
 
-        // Sign UserOp
-        bytes32 opHash = IEntryPoint(entrypoint).getUserOpHash(op);
-        bytes32 msgHash = ECDSA.toEthSignedMessageHash(opHash);
+    //     // Sign UserOp
+    //     // bytes32 opHash = IEntryPoint(entrypoint).getUserOpHash(op);
+    //     // bytes32 msgHash = ECDSA.toEthSignedMessageHash(opHash);
 
-        // (uint8 v, bytes32 r, bytes32 s) = vm.sign(_signerPKey, msgHash);
-        // bytes memory userOpSignature = abi.encodePacked(r, s, v);
+    //     // (uint8 v, bytes32 r, bytes32 s) = vm.sign(_signerPKey, msgHash);
+    //     // bytes memory userOpSignature = abi.encodePacked(r, s, v);
 
-        // address recoveredSigner = ECDSA.recover(msgHash, v, r, s);
-        // address expectedSigner = vm.addr(_signerPKey);
-        // assertEq(recoveredSigner, expectedSigner);
+    //     // address recoveredSigner = ECDSA.recover(msgHash, v, r, s);
+    //     // address expectedSigner = vm.addr(_signerPKey);
+    //     // assertEq(recoveredSigner, expectedSigner);
 
-        // op.signature = userOpSignature;
-        op.signature = new bytes(0);
+    //     // op.signature = userOpSignature;
+    //     op.signature = new bytes(0);
 
-        // Store UserOp
-        ops = new UserOperation[](1);
-        ops[0] = op;
-    }
+    //     // Store UserOp
+    //     ops = new UserOperation[](1);
+    //     ops[0] = op;
+    // }
 
     function setUp() public {
         entryPoint = new EntryPoint();
