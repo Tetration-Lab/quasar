@@ -13,3 +13,6 @@
 [submodule "smart-account/contracts/lib/dilithium-solidity"]
 	path = smart-account/contracts/lib/dilithium-solidity
 	url = https://github.com/Tetration-Lab/dilithium-solidity
+[submodule "smart-account/contracts/lib/falcon-solidity"]
+	path = smart-account/contracts/lib/falcon-solidity
+	url = https://github.com/Tetration-Lab/falcon-solidity
