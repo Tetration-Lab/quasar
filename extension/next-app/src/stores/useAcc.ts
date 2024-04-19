@@ -4,13 +4,17 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { chromeStorage } from "./chrome";
 import { chains } from "../constants/web3";
 import { Chain } from "viem";
+import { Keys } from "pqc_dilithium";
+import { toBytes } from "viem";
 
 interface IAcc {
   isLocked: boolean;
   account?: {
     mnemonic: string;
     password: string;
+    epk: string; // json string
   };
+  setAccount: (account: { mnemonic: string; password: string }) => void;
   lock: () => void;
   unlock: (password: string) => boolean;
   reset: () => void;
@@ -26,6 +30,17 @@ export const useAcc = create(
     (set, get) => ({
       isLocked: false,
       account: undefined,
+      setAccount: (account) => {
+        const key = Keys.derive(toBytes(account.mnemonic));
+        set({
+          account: {
+            mnemonic: account.mnemonic,
+            password: account.password,
+            epk: key.expanded_pk_json(),
+          },
+          isLocked: false,
+        });
+      },
       lock: () => set({ isLocked: true }),
       unlock: (password: string) => {
         const pw = get().account?.password;

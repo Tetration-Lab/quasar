@@ -17,6 +17,7 @@ import { useAcc } from "../../stores/useAcc";
 
 export const ImportPage = () => {
   const router = useRouter();
+  const acc = useAcc();
 
   const [mnemonicInput, setMnemonicInput] = useState("");
   const [password, setPassword] = useState("");
@@ -26,12 +27,9 @@ export const ImportPage = () => {
     if (mnemonic.length !== 24) {
       return;
     }
-    useAcc.setState({
-      account: {
-        mnemonic: mnemonic.join(" "),
-        password,
-      },
-      isLocked: false,
+    acc.setAccount({
+      mnemonic: mnemonic.join(" "),
+      password,
     });
   }, [mnemonicInput, password, router]);
 
