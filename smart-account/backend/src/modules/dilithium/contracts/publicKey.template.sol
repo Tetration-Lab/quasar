@@ -1,67 +1,119 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.23;
 
-import {Dilithium, PolynomialVector, Polynomial, K} from "@tetrationlab/dilithium/Dilithium.sol";
+struct Poly {
+    int32[256] coeffs;
+}
+
+struct PolyVecK {
+    Poly[4] polys;
+}
+
+struct PolyVecL {
+    Poly[4] polys;
+}
+
+struct ExpandedPublicKey {
+    bytes32 packed;
+    PolyVecL[4] mat;
+    PolyVecK t1;
+}
 
 interface IDilithiumPublicKey {
-    function expandedPublicKey() external pure returns (Dilithium.ExpandedPublicKey memory);
+    function expandedPublicKey()
+        external
+        view
+        returns (ExpandedPublicKey memory);
+}
+
+// prettier-ignore
+contract PKMAT0 {
+    constructor() {}
+    function mat0() external pure returns (PolyVecL memory m) {
+        m.polys[0].coeffs = [{%%mat0.polys0%%}];
+        m.polys[1].coeffs = [{%%mat0.polys1%%}];
+        m.polys[2].coeffs = [{%%mat0.polys2%%}];
+        m.polys[3].coeffs = [{%%mat0.polys3%%}];
+    }
+}
+
+// prettier-ignore
+contract PKMAT1 {
+    constructor() {}
+    function mat1() external pure returns (PolyVecL memory m) {
+        m.polys[0].coeffs = [{%%mat1.polys0%%}];
+        m.polys[1].coeffs = [{%%mat1.polys1%%}];
+        m.polys[2].coeffs = [{%%mat1.polys2%%}];
+        m.polys[3].coeffs = [{%%mat1.polys3%%}];
+    }
+}
+
+// prettier-ignore
+contract PKMAT2 {
+    constructor() {}
+    function mat2() external pure returns (PolyVecL memory m) {
+        m.polys[0].coeffs = [{%%mat2.polys0%%}];
+        m.polys[1].coeffs = [{%%mat2.polys1%%}];
+        m.polys[2].coeffs = [{%%mat2.polys2%%}];
+        m.polys[3].coeffs = [{%%mat2.polys3%%}];
+    }
+}
+
+// prettier-ignore
+contract PKMAT3 {
+    constructor() {}
+    function mat3() external pure returns (PolyVecL memory m) {
+        m.polys[0].coeffs = [{%%mat3.polys0%%}];
+        m.polys[1].coeffs = [{%%mat3.polys1%%}];
+        m.polys[2].coeffs = [{%%mat3.polys2%%}];
+        m.polys[3].coeffs = [{%%mat3.polys3%%}];
+    }
+}
+
+// prettier-ignore
+contract PKT1 {
+    constructor() {}
+    function t1() external pure returns (PolyVecK memory m) {
+        m.polys[0].coeffs = [{%%t1.polys0%%}];
+        m.polys[1].coeffs = [{%%t1.polys1%%}];
+        m.polys[2].coeffs = [{%%t1.polys2%%}];
+        m.polys[3].coeffs = [{%%t1.polys3%%}];
+    }
 }
 
 contract DilithiumPublicKey is IDilithiumPublicKey {
-    using Polynomial for Polynomial.Poly;
-    using PolynomialVector for PolynomialVector.PolyVecK;
-    using PolynomialVector for PolynomialVector.PolyVecL;
+    PKMAT0 immutable mat0;
+    PKMAT1 immutable mat1;
+    PKMAT2 immutable mat2;
+    PKMAT3 immutable mat3;
+    PKT1 immutable t1;
 
-    constructor() {}
-
-    function constructMat0() internal pure returns (PolynomialVector.PolyVecL memory) {
-        Polynomial.Poly memory mat00 = Polynomial.Poly({%%mat0.vec[0]%%});
-        Polynomial.Poly memory mat01 = Polynomial.Poly({%%mat0.vec[1]%%});
-        Polynomial.Poly memory mat02 = Polynomial.Poly({%%mat0.vec[2]%%});
-        Polynomial.Poly memory mat03 = Polynomial.Poly({%%mat0.vec[3]%%});
-        return PolynomialVector.PolyVecL([mat00, mat01, mat02, mat03]);
+    constructor(
+        PKMAT0 _mat0,
+        PKMAT1 _mat1,
+        PKMAT2 _mat2,
+        PKMAT3 _mat3,
+        PKT1 _t1
+    ) {
+        mat0 = _mat0;
+        mat1 = _mat1;
+        mat2 = _mat2;
+        mat3 = _mat3;
+        t1 = _t1;
     }
 
-    function constructMat1() internal pure returns (PolynomialVector.PolyVecL memory) {
-        Polynomial.Poly memory mat10 = Polynomial.Poly({%%mat1.vec[0]%%});
-        Polynomial.Poly memory mat11 = Polynomial.Poly({%%mat1.vec[1]%%});
-        Polynomial.Poly memory mat12 = Polynomial.Poly({%%mat1.vec[2]%%});
-        Polynomial.Poly memory mat13 = Polynomial.Poly({%%mat1.vec[3]%%});
-        return PolynomialVector.PolyVecL([mat10, mat11, mat12, mat13]);
-    }
-
-    function constructMat2() internal pure returns (PolynomialVector.PolyVecL memory) {
-        Polynomial.Poly memory mat20 = Polynomial.Poly({%%mat2.vec[0]%%});
-        Polynomial.Poly memory mat21 = Polynomial.Poly({%%mat2.vec[1]%%});
-        Polynomial.Poly memory mat22 = Polynomial.Poly({%%mat2.vec[2]%%});
-        Polynomial.Poly memory mat23 = Polynomial.Poly({%%mat2.vec[3]%%});
-        return PolynomialVector.PolyVecL([mat20, mat21, mat22, mat23]);
-    }
-
-    function constructMat3() internal pure returns (PolynomialVector.PolyVecL memory) {
-        Polynomial.Poly memory mat30 = Polynomial.Poly({%%mat3.vec[0]%%});
-        Polynomial.Poly memory mat31 = Polynomial.Poly({%%mat3.vec[1]%%});
-        Polynomial.Poly memory mat32 = Polynomial.Poly({%%mat3.vec[2]%%});
-        Polynomial.Poly memory mat33 = Polynomial.Poly({%%mat3.vec[3]%%});
-        return PolynomialVector.PolyVecL([mat30, mat31, mat32, mat33]);
-    }
-
-    function expandedPublicKey() external pure override returns (Dilithium.ExpandedPublicKey memory epk) {
-        bytes32 packed = hex"{%%packed%%}";
-        PolynomialVector.PolyVecK memory t1;
-        Polynomial.Poly memory t1_0 = Polynomial.Poly({%%t1.vec[0]%%});
-        Polynomial.Poly memory t1_1 = Polynomial.Poly({%%t1.vec[1]%%});
-        Polynomial.Poly memory t1_2 = Polynomial.Poly({%%t1.vec[2]%%});
-        Polynomial.Poly memory t1_3 = Polynomial.Poly({%%t1.vec[3]%%});
-        t1 = PolynomialVector.PolyVecK([t1_0, t1_1, t1_2, t1_3]);
-        PolynomialVector.PolyVecL[K] memory mat;
-        PolynomialVector.PolyVecL memory mat0 = constructMat0();
-        PolynomialVector.PolyVecL memory mat1 = constructMat1();
-        PolynomialVector.PolyVecL memory mat2 = constructMat2();
-        PolynomialVector.PolyVecL memory mat3 = constructMat3();
-        mat = [mat0, mat1, mat2, mat3];
-        epk.packed = packed;
-        epk.mat = mat;
-        epk.t1 = t1;
+    function expandedPublicKey()
+        external
+        view
+        override
+        returns (ExpandedPublicKey memory epk)
+    {
+        epk
+            .packed = hex"{%%packed%%}";
+        epk.t1 = t1.t1();
+        epk.mat[0] = mat0.mat0();
+        epk.mat[1] = mat1.mat1();
+        epk.mat[2] = mat2.mat2();
+        epk.mat[3] = mat3.mat3();
     }
 }

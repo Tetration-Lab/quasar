@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common'
 import { DilithiumService } from './dilithium.service';
+import { ExpandedPublicKeyDto } from './dto/pubkey.dto';
 
 @Controller('dilithium')
 export class DilithiumController {
@@ -7,9 +8,12 @@ export class DilithiumController {
     private readonly dilithiumService: DilithiumService
   ) {}
 
-  @Get()
-  async test() {
-    // this.dilithiumService.buildContract();
-    await this.dilithiumService.deployContract();
+  @Post('createAccount')
+  async createAccount(@Body() dto: ExpandedPublicKeyDto) {
+    this.dilithiumService.buildPublicKeyContract(dto);
+    const address = await this.dilithiumService.deployPublicKey();
+    return address
+    // const result = await this.dilithiumService.buildContract();
+    // return result
   }
 }
