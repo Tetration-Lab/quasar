@@ -49,7 +49,7 @@ export const signMessage = async (hex: string) => {
   const mnemonic = await getMnemonic();
   const dilithium = await import("pqc_dilithium");
   const keys = dilithium.Keys.derive(toBytes(mnemonic));
-  const bytes = keys.sign_bytes(fromHex(hex as Hex, "bytes"));
+  const bytes = keys.sign_bytes(fromHex(hex as Hex, "bytes"), true);
   const signature = toHex(bytes);
   return signature;
 };
