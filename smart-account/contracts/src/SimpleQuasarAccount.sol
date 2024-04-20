@@ -2,14 +2,18 @@
 pragma solidity ^0.8.23;
 
 import "./interfaces/IDilithiumPublicKey.sol";
-import "@tetrationlab/dilithium/Dilithium.sol";
-import "@tetrationlab/dilithium/Packing.sol";
+import "@tetrationlab/dilithium/contract/Dilithium.sol";
+import "@tetrationlab/dilithium/contract/Packing.sol";
 
 contract SimpleQuasarAccount {
+    Dilithium immutable dilithium;
+    Packing immutable packing;
+
     IDilithiumPublicKey public publicKey;
 
-    constructor() {
-        
+    constructor(Dilithium _dilithium, Packing _packing) {
+        dilithium = _dilithium;
+        packing = _packing;
     }
 
     function initialize(IDilithiumPublicKey _publicKey) external {
@@ -30,8 +34,8 @@ contract SimpleQuasarAccount {
 
     function verify(bytes calldata signature, bytes32 message) internal view returns (bool) {
         Dilithium.ExpandedPublicKey memory epk = publicKey.expandedPublicKey();
-        Dilithium.Signature memory sig = Packing.unpack_sig(signature);
-        return Dilithium.verifyExpanded(sig, epk, bytes.concat(message));
+        Dilithium.Signature memory sig = packing.unpack_sig(signature);
+        return dilithium.verifyExpanded(sig, epk, bytes.concat(message));
     }
 
     function execute(address dest, uint256 value, bytes calldata func, bytes calldata signature) external {
