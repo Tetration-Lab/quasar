@@ -10,6 +10,7 @@ import "@tetrationlab/dilithium/contract/Ntt.sol";
 import "@tetrationlab/dilithium/contract/Poly.sol";
 import "@tetrationlab/dilithium/contract/PolyVec.sol";
 import "@tetrationlab/dilithium/contract/Packing.sol";
+import "@tetrationlab/dilithium/contract/Symmetric.sol";
 
 contract AccountFactoryDeployer is Script {
     function setUp() public {}
@@ -17,13 +18,15 @@ contract AccountFactoryDeployer is Script {
     function run() public {
         vm.startBroadcast();
 
-        bytes32 salt = bytes32(0x0);
+        bytes32 salt = bytes32(uint256(1));
 
         // Deploy Dilithium
         Ntt ntt = Ntt(Create2.deploy(0, salt, type(Ntt).creationCode));
         Invntt invntt = Invntt(Create2.deploy(0, salt, type(Invntt).creationCode));
-        Polynomial poly =
-            Polynomial(Create2.deploy(0, salt, abi.encodePacked(type(Polynomial).creationCode, abi.encode(ntt))));
+        Stream stream = Stream(Create2.deploy(0, salt, type(Stream).creationCode));
+        Polynomial poly = Polynomial(
+            Create2.deploy(0, salt, abi.encodePacked(type(Polynomial).creationCode, abi.encode(ntt, stream)))
+        );
         PolynomialVector polyVec = PolynomialVector(
             Create2.deploy(
                 0, salt, abi.encodePacked(type(PolynomialVector).creationCode, abi.encode(ntt, invntt, poly))
