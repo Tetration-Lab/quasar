@@ -104,7 +104,6 @@ export class DilithiumService {
         
         const result = await this.deployContract(publicKeyPath, provider, [mat0Address, mat1Address, mat2Address, mat3Address, t1Address])
         const publicKeyAddress = await result.getAddress();
-        console.log(result)
         return {
             publicKeyAddress
         }

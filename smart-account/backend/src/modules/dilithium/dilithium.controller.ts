@@ -13,7 +13,5 @@ export class DilithiumController {
     this.dilithiumService.buildPublicKeyContract(dto);
     const address = await this.dilithiumService.deployPublicKey();
     return address
-    // const result = await this.dilithiumService.buildContract();
-    // return result
   }
 }

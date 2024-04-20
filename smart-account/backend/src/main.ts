@@ -1,10 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import * as bodyParser from 'body-parser';
+import { NestExpressApplication } from '@nestjs/platform-express'
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  app.use(bodyParser.json({limit: '50mb'}));
-  await app.listen(3000);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.enableCors({ origin: '*' })
+  app.useBodyParser('json', { limit: '1mb' })
+
+  const configService = app.get(ConfigService)
+  const port = configService.get<number>('port') || 3000
+  await app.listen(port)
 }
 bootstrap();
