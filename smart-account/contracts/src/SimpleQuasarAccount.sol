@@ -32,7 +32,7 @@ contract SimpleQuasarAccount {
         }
     }
 
-    function verify(bytes calldata signature, bytes32 message) internal view returns (bool) {
+    function verify(bytes calldata signature, bytes32 message) public view returns (bool) {
         Dilithium.ExpandedPublicKey memory epk = publicKey.expandedPublicKey();
         Dilithium.Signature memory sig = packing.unpack_sig(signature);
         return dilithium.verifyExpanded(sig, epk, bytes.concat(message));
