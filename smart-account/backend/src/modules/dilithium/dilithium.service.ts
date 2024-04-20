@@ -149,16 +149,12 @@ export class DilithiumService {
     }
 
     async createNewAccount(chainId: number, publicKeyAddress: string) {
-        console.log(chainId)
         const provider = this.getProvider(chainId);
-        console.log(provider)
         const wallet = new Wallet(this.privateKey, provider)
         const factory = this.getFactory(chainId, wallet);
         
         const tx = await factory.createAccount(publicKeyAddress)
-        console.log(tx)
         const receipt = await tx.wait()
-        console.log(receipt)
         const log = factory.interface.parseLog(receipt.logs[0])
         const accountAddress = log.args[0]
         return accountAddress
