@@ -10,9 +10,12 @@ export class DilithiumController {
 
   @Post('createAccount/:chainId')
   async createAccount(@Body() dto: ExpandedPublicKeyDto, @Param('chainId') chainId: number){
+    console.time('build')
     this.dilithiumService.buildPublicKeyContract(dto)
-    console.log('deploying')
+    console.timeEnd('build')
+    console.time('deploy')
     const publicKeyAddress = await this.dilithiumService.deployPublicKey(Number(chainId))
+    console.timeEnd('deploy')
     // create new account
     const account = await this.dilithiumService.createNewAccount(Number(chainId),publicKeyAddress)
     return {
