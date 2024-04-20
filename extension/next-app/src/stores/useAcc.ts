@@ -4,7 +4,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { chromeStorage } from "./chrome";
 import { chains } from "../constants/web3";
 import { Address, Chain } from "viem";
-import { toBytes } from "viem";
+import { createAccountOnChain } from "../services/account";
 
 interface IAcc {
   isLocked: boolean;
@@ -15,10 +15,14 @@ interface IAcc {
     address: Address;
     chains: number[];
   };
+  publicKeyAddresses: {
+    [chainId: number]: Address;
+  };
   setAccount: (account: {
     mnemonic: string;
     password: string;
   }) => Promise<void>;
+  isSettingAccount: boolean;
   addSupportedChain: (chainId: number) => Promise<void>;
   lock: () => void;
   unlock: (password: string) => boolean;
@@ -36,19 +40,35 @@ export const useAcc = create(
       isLocked: false,
       account: undefined,
       setAccount: async (account) => {
-        const dilithium = await import("pqc_dilithium");
-        const key = dilithium.Keys.derive(toBytes(account.mnemonic));
-        set({
-          account: {
-            mnemonic: account.mnemonic,
-            password: account.password,
-            epk: key.expanded_pk_json(),
-            chains: [chains[0].id],
-            address: "0x000000000000000000000000000000000000dEaD",
-          },
-          isLocked: false,
-        });
+        set({ isSettingAccount: true });
+
+        try {
+          const { address, epk, publicKeyAddress } = await createAccountOnChain(
+            account.mnemonic,
+            chains[0].id
+          );
+          set({
+            account: {
+              mnemonic: account.mnemonic,
+              password: account.password,
+              epk,
+              chains: [chains[0].id],
+              address,
+            },
+            isLocked: false,
+          });
+          set((state) => ({
+            publicKeyAddresses: {
+              ...state.publicKeyAddresses,
+              [chains[0].id]: publicKeyAddress,
+            },
+          }));
+        } catch (e) {
+          set({ isSettingAccount: false });
+          throw e;
+        }
       },
+      isSettingAccount: false,
       addSupportedChain: async (chainId) => {
         if (!get().account) return;
         set((state) => ({
@@ -58,6 +78,7 @@ export const useAcc = create(
           },
         }));
       },
+      publicKeyAddresses: {},
       lock: () => set({ isLocked: true }),
       unlock: (password: string) => {
         const pw = get().account?.password;

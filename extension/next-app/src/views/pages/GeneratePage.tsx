@@ -71,7 +71,11 @@ export const GeneratePage = () => {
       <Divider my={1} />
       <Heading size="md">Set Password</Heading>
       <Input type="password" onChange={(e) => setPassword(e.target.value)} />
-      <Button onClick={generate} isDisabled={!password}>
+      <Button
+        onClick={generate}
+        isDisabled={!password}
+        isLoading={acc.isSettingAccount}
+      >
         Generate Wallet
       </Button>
     </Stack>
