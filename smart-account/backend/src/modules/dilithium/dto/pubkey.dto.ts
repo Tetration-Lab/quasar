@@ -1,7 +1,7 @@
 export class ExpandedPublicKeyDto {
   packed: number[]
   mat: PolyVec[]
-  t1: PolyVec   
+  t1: PolyVec
 }
 
 export class Poly {

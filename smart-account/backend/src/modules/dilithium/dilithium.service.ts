@@ -12,6 +12,12 @@ export class DilithiumService {
     privateKey: string;
     arbitrumRpc: string;
     arbitrumFactory: string;
+    ethRpc: string;
+    ethFactory: string;
+    gnosisRpc: string;
+    gnosisFactory: string;
+    availRpc: string;
+    availFactory: string;
 
     constructor(
         private readonly configService: ConfigService,
@@ -19,6 +25,13 @@ export class DilithiumService {
         this.privateKey = this.configService.get('privateKey');
         this.contractRootPath = this.configService.get('contractRootPath');
         this.arbitrumRpc = this.configService.get('arbitrum.rpc');
+        this.arbitrumFactory = this.configService.get('arbitrum.factory');
+        this.ethRpc = this.configService.get('eth.rpc');
+        this.ethFactory = this.configService.get('eth.factory');
+        this.gnosisRpc = this.configService.get('gnosis.rpc');
+        this.gnosisFactory = this.configService.get('gnosis.factory');
+        this.availRpc = this.configService.get('avail.rpc');
+        this.availFactory = this.configService.get('avail.factory');
     }
 
     convertCoeffs(coeffs: number[]): string {
@@ -76,13 +89,41 @@ export class DilithiumService {
     getProvider(chainId: number) {
         let rpcUrl;
         if (chainId == 421614) {
+            // arbitrum
             rpcUrl = this.arbitrumRpc
+        } else if (chainId == 11155111) {
+            // eth
+            rpcUrl = this.ethRpc
+        } else if (chainId == 202402021700) {
+            // avail
+            rpcUrl = this.availRpc
+        } else if (chainId == 10200) {
+            // gnosis
+            rpcUrl = this.gnosisRpc
         }
         return new ethers.JsonRpcProvider(rpcUrl)
     }
 
-    async deployPublicKey() {
-        const provider = this.getProvider(421614)
+    getFactory(chainId: number, wallet) {
+        const abi = fs.readFileSync(path.join(this.contractRootPath, 'out/SimpleQuasarAccountFactory.sol/SimpleQuasarAccountFactory.json'), 'utf8');
+        let factoryAddress;
+        if (chainId == 421614) {
+            factoryAddress = this.arbitrumFactory
+        } else if (chainId == 11155111) {
+            // eth
+            factoryAddress = this.ethFactory
+        } else if (chainId == 202402021700) {
+            // avail
+            factoryAddress = this.availFactory
+        } else if (chainId == 10200) {
+            // gnosis
+            factoryAddress = this.gnosisFactory
+        }
+        return new ethers.Contract(factoryAddress, JSON.parse(abi).abi, wallet)
+    }
+
+    async deployPublicKey(chainId: number) {
+        const provider = this.getProvider(chainId)
         //deploy public Key
         const t1Path = path.join(this.contractRootPath, 'out/publicKey.sol/PKT1.json')
         const t1Result = await this.deployContract(t1Path, provider)
@@ -104,8 +145,22 @@ export class DilithiumService {
         
         const result = await this.deployContract(publicKeyPath, provider, [mat0Address, mat1Address, mat2Address, mat3Address, t1Address])
         const publicKeyAddress = await result.getAddress();
-        return {
-            publicKeyAddress
-        }
+        return publicKeyAddress
+    }
+
+    async createNewAccount(chainId: number, publicKeyAddress: string) {
+        console.log(chainId)
+        const provider = this.getProvider(chainId);
+        console.log(provider)
+        const wallet = new Wallet(this.privateKey, provider)
+        const factory = this.getFactory(chainId, wallet);
+        
+        const tx = await factory.createAccount(publicKeyAddress)
+        console.log(tx)
+        const receipt = await tx.wait()
+        console.log(receipt)
+        const log = factory.interface.parseLog(receipt.logs[0])
+        const accountAddress = log.args[0]
+        return accountAddress
     }
 }
