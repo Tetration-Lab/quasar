@@ -11,9 +11,12 @@ contract SimpleQuasarAccountFactory {
     Dilithium immutable dilithium;
     Packing immutable packing;
 
-    mapping(address => bool) public accounts;
+    error AccountAlreadyCreated(address account, address publicKey, bytes32 publicKeyHash);
 
-    event AccountCreated(address account);
+    mapping(address => bool) public created;
+    mapping(bytes32 => address[2]) public registry;
+
+    event AccountCreated(address indexed account, address indexed publicKey, bytes32 indexed publicKeyHash);
 
     constructor(Dilithium _dilithium, Packing _packing) {
         dilithium = _dilithium;
@@ -22,12 +25,20 @@ contract SimpleQuasarAccountFactory {
 
     function createAccount(IDilithiumPublicKey publicKey) external returns (address) {
         bytes32 pkHash = keccak256(abi.encode(publicKey.expandedPublicKey()));
+
+        if (registry[pkHash][0] != address(0)) {
+            revert AccountAlreadyCreated(registry[pkHash][0], registry[pkHash][1], pkHash);
+        }
+
         address account = Create2.deploy(
             0, pkHash, abi.encodePacked(type(SimpleQuasarAccount).creationCode, abi.encode(dilithium, packing))
         );
         SimpleQuasarAccount(account).initialize(publicKey);
-        accounts[account] = true;
-        emit AccountCreated(account);
+        created[account] = true;
+        registry[pkHash] = [account, address(publicKey)];
+
+        emit AccountCreated(account, address(publicKey), pkHash);
+
         return account;
     }
 }

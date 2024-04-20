@@ -43,7 +43,11 @@ export const SelectChainMenu = () => {
       </MenuButton>
       <MenuList>
         {chains.map((c) => (
-          <MenuItem key={c.id} onClick={() => acc.switchNetwork(c)}>
+          <MenuItem
+            key={c.id}
+            onClick={() => acc.switchNetwork(c)}
+            isDisabled={c.isDisabled}
+          >
             <NetworkBadge network={c} />
           </MenuItem>
         ))}

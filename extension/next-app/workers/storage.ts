@@ -23,7 +23,7 @@ export const isWebsiteConnected = async (website: string): Promise<boolean> => {
 };
 
 export const getAddress = async (): Promise<string> => {
-  return "0x0000000000000000000000000000000000000008";
+  return await storageGetMain().then((res) => res?.account?.address);
 };
 
 export const getNetwork = async (): Promise<Chain | undefined> => {
