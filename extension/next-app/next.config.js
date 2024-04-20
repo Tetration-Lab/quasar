@@ -12,6 +12,7 @@ const nextConfig = {
   webpack: (config, { isServer }) => {
     // set experiments
     config.experiments = { ...config.experiments, asyncWebAssembly: true };
+    config.resolve.fallback = { fs: false, net: false, tls: false };
     return config;
   },
 };

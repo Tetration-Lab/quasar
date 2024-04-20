@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { chromeStorage } from "./chrome";
 import { chains } from "../constants/web3";
-import { Chain } from "viem";
+import { Address, Chain } from "viem";
 import { toBytes } from "viem";
 
 interface IAcc {
@@ -12,11 +12,14 @@ interface IAcc {
     mnemonic: string;
     password: string;
     epk: string; // json string
+    address: Address;
+    chains: number[];
   };
   setAccount: (account: {
     mnemonic: string;
     password: string;
   }) => Promise<void>;
+  addSupportedChain: (chainId: number) => Promise<void>;
   lock: () => void;
   unlock: (password: string) => boolean;
   reset: () => void;
@@ -40,9 +43,20 @@ export const useAcc = create(
             mnemonic: account.mnemonic,
             password: account.password,
             epk: key.expanded_pk_json(),
+            chains: [chains[0].id],
+            address: "0x000000000000000000000000000000000000dEaD",
           },
           isLocked: false,
         });
+      },
+      addSupportedChain: async (chainId) => {
+        if (!get().account) return;
+        set((state) => ({
+          account: {
+            ...state.account,
+            chains: [...state.account?.chains, chainId],
+          },
+        }));
       },
       lock: () => set({ isLocked: true }),
       unlock: (password: string) => {
