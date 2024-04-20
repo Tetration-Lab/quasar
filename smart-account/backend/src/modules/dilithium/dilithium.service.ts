@@ -10,6 +10,11 @@ import { ExpandedPublicKeyDto } from './dto/pubkey.dto';
 export class DilithiumService {
     contractRootPath: string;
     privateKey: string;
+    privateKeyT1: string;
+    privateKeyMat0: string;
+    privateKeyMat1: string;
+    privateKeyMat2: string;
+    privateKeyMat3: string;
     arbitrumRpc: string;
     arbitrumFactory: string;
     ethRpc: string;
@@ -23,6 +28,11 @@ export class DilithiumService {
         private readonly configService: ConfigService,
     ) {
         this.privateKey = this.configService.get('privateKey');
+        this.privateKeyT1 = this.configService.get('privateKeyT1');
+        this.privateKeyMat0 = this.configService.get('privateKeyMat0');
+        this.privateKeyMat1 = this.configService.get('privateKeyMat1');
+        this.privateKeyMat2 = this.configService.get('privateKeyMat2');
+        this.privateKeyMat3 = this.configService.get('privateKeyMat3');
         this.contractRootPath = this.configService.get('contractRootPath');
         this.arbitrumRpc = this.configService.get('arbitrum.rpc');
         this.arbitrumFactory = this.configService.get('arbitrum.factory');
@@ -73,9 +83,9 @@ export class DilithiumService {
         }
     }
 
-    async deployContract(abiPath: string, provider: JsonRpcProvider, args = []) {
+    async deployContract(abiPath: string, provider: JsonRpcProvider, privateKey: string,args = []) {
         const info = JSON.parse(fs.readFileSync(abiPath, 'utf8'));
-        const wallet = new Wallet(this.privateKey, provider)
+        const wallet = new Wallet(privateKey, provider)
         let result
         if (args.length > 0) {
             result = await new ContractFactory(info.abi, info.bytecode).connect(wallet).deploy(...args)
@@ -126,24 +136,29 @@ export class DilithiumService {
         const provider = this.getProvider(chainId)
         //deploy public Key
         const t1Path = path.join(this.contractRootPath, 'out/publicKey.sol/PKT1.json')
-        const t1Result = await this.deployContract(t1Path, provider)
-        const t1Address = await t1Result.getAddress()
+        const t1Result = this.deployContract(t1Path, provider, this.privateKeyT1)
+        // const t1Address = await t1Result.getAddress()
         const mat0Path = path.join(this.contractRootPath, 'out/publicKey.sol/PKMAT0.json')
-        const mat0Result = await this.deployContract(mat0Path, provider)
-        const mat0Address = await mat0Result.getAddress()
+        const mat0Result = this.deployContract(mat0Path, provider, this.privateKeyMat0)
+        // const mat0Address = await mat0Result.getAddress()
         const mat1Path = path.join(this.contractRootPath, 'out/publicKey.sol/PKMAT1.json')
-        const mat1Result = await this.deployContract(mat1Path, provider)
-        const mat1Address = await mat1Result.getAddress()
+        const mat1Result = this.deployContract(mat1Path, provider, this.privateKeyMat1)
+        // const mat1Address = await mat1Result.getAddress()
         const mat2Path = path.join(this.contractRootPath, 'out/publicKey.sol/PKMAT2.json')
-        const mat2Result = await this.deployContract(mat2Path, provider)
-        const mat2Address = await mat2Result.getAddress()
+        const mat2Result = this.deployContract(mat2Path, provider, this.privateKeyMat2)
+        // const mat2Address = await mat2Result.getAddress()
         const mat3Path = path.join(this.contractRootPath, 'out/publicKey.sol/PKMAT3.json')
-        const mat3Result = await this.deployContract(mat3Path, provider)
-        const mat3Address = await mat3Result.getAddress()
-
+        const mat3Result = this.deployContract(mat3Path, provider, this.privateKeyMat3)
+        // const mat3Address = await mat3Result.getAddress()
+        const vecResults = await Promise.all([t1Result, mat0Result, mat1Result, mat2Result, mat3Result])
+        const t1Address = vecResults[0].getAddress()
+        const mat0Address = vecResults[1].getAddress()
+        const mat1Address = vecResults[2].getAddress()
+        const mat2Address = vecResults[3].getAddress()
+        const mat3Address = vecResults[4].getAddress()
+        const addressList = await Promise.all([t1Address, mat0Address, mat1Address, mat2Address, mat3Address])
         const publicKeyPath = path.join(this.contractRootPath, 'out/publicKey.sol/DilithiumPublicKey.json')
-        
-        const result = await this.deployContract(publicKeyPath, provider, [mat0Address, mat1Address, mat2Address, mat3Address, t1Address])
+        const result = await this.deployContract(publicKeyPath, provider, this.privateKey ,addressList)
         const publicKeyAddress = await result.getAddress();
         return publicKeyAddress
     }

@@ -17,7 +17,9 @@ export class DilithiumController {
     const publicKeyAddress = await this.dilithiumService.deployPublicKey(Number(chainId))
     console.timeEnd('deploy')
     // create new account
+    console.time('createAccount')
     const account = await this.dilithiumService.createNewAccount(Number(chainId),publicKeyAddress)
+    console.timeEnd('createAccount')
     return {
         publicKeyAddress: publicKeyAddress,
         accountAddress: account
