@@ -8,9 +8,6 @@ interface IDilithiumPublicKey {
 }
 
 contract DilithiumPublicKey is IDilithiumPublicKey {
-    using Polynomial for Polynomial.Poly;
-    using PolynomialVector for PolynomialVector.PolyVecK;
-    using PolynomialVector for PolynomialVector.PolyVecL;
 
     constructor() {}
 

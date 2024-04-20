@@ -65,6 +65,15 @@ export class DilithiumService {
         return result
     }
 
+    async deployPublicKey2(abiPath: string) {
+        const info = JSON.parse(fs.readFileSync(abiPath, 'utf8'));
+        const provider = new ethers.JsonRpcProvider('https://sepolia-rollup.arbitrum.io/rpc')
+        const wallet = new Wallet('0x823040ded853732e9ce72c2c3aecb6e6ffcfb5a53b9b614cb46427d532150f37', provider)
+        const result = await new ContractFactory(info.abi, info.bytecode).connect(wallet).deploy()
+        await result.waitForDeployment()
+        return result
+    }
+
     async readPublicKey(abiPath: string, address: string) {
         const info = JSON.parse(fs.readFileSync(abiPath, 'utf8'));
         const provider = new ethers.JsonRpcProvider('https://sepolia-rollup.arbitrum.io/rpc')
@@ -74,21 +83,24 @@ export class DilithiumService {
     }
 
     async deployContract() {
-        const abiMat0Path = '../contracts/out/publicKeyMat0.sol/DilithiumPublicKeyMat0.json'
-        const result0 = await this.deployPolyVecContract(abiMat0Path)
-        const address0 = await result0.getAddress()
-        const abiMat1Path = '../contracts/out/publicKeyMat1.sol/DilithiumPublicKeyMat1.json'
-        const result1 = await this.deployPolyVecContract(abiMat1Path)
-        const address1 = await result1.getAddress()
-        const abiMat2Path = '../contracts/out/publicKeyMat2.sol/DilithiumPublicKeyMat2.json'
-        const result2 = await this.deployPolyVecContract(abiMat2Path)
-        const address2 = await result2.getAddress()
-        const abiMat3Path = '../contracts/out/publicKeyMat3.sol/DilithiumPublicKeyMat3.json'
-        const result3 = await this.deployPolyVecContract(abiMat3Path)
-        const address3 = await result3.getAddress()
-        // deplouy public Key
+        // const abiMat0Path = '../contracts/out/publicKeyMat0.sol/DilithiumPublicKeyMat0.json'
+        // const result0 = await this.deployPolyVecContract(abiMat0Path)
+        // const address0 = await result0.getAddress()
+        // const abiMat1Path = '../contracts/out/publicKeyMat1.sol/DilithiumPublicKeyMat1.json'
+        // const result1 = await this.deployPolyVecContract(abiMat1Path)
+        // const address1 = await result1.getAddress()
+        // const abiMat2Path = '../contracts/out/publicKeyMat2.sol/DilithiumPublicKeyMat2.json'
+        // const result2 = await this.deployPolyVecContract(abiMat2Path)
+        // const address2 = await result2.getAddress()
+        // const abiMat3Path = '../contracts/out/publicKeyMat3.sol/DilithiumPublicKeyMat3.json'
+        // const result3 = await this.deployPolyVecContract(abiMat3Path)
+        // const address3 = await result3.getAddress()
+        // //deploy public Key
+        // const abiPath = '../contracts/out/publicKey2.sol/DilithiumPublicKey.json'
+        // const result = await this.deployPublicKey(abiPath, address0, address1, address2, address3)
+        // await this.readPublicKey(abiPath, await result.getAddress())
         const abiPath = '../contracts/out/publicKey.sol/DilithiumPublicKey.json'
-        const result = await this.deployPublicKey(abiPath, address0, address1, address2, address3)
+        const result = await this.deployPublicKey2(abiPath)
         await this.readPublicKey(abiPath, await result.getAddress())
     }
 }
