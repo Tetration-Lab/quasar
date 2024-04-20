@@ -15,6 +15,7 @@ export class DilithiumController {
     console.timeEnd('build')
     console.time('deploy')
     const publicKeyAddress = await this.dilithiumService.deployPublicKey(Number(chainId))
+    console.log(publicKeyAddress)
     console.timeEnd('deploy')
     // create new account
     console.time('createAccount')
@@ -24,5 +25,11 @@ export class DilithiumController {
         publicKeyAddress: publicKeyAddress,
         accountAddress: account
     }
+  }
+
+  @Get('publicKey/:chainId/:address')
+  async getPublicKey(@Param('chainId') chainId: number, @Param('address') address: string){
+    await this.dilithiumService.debug(Number(chainId))
+    // return await this.dilithiumService.readPublicKey(Number(chainId), address)
   }
 }

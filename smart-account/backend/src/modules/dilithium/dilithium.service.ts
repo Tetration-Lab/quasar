@@ -83,7 +83,7 @@ export class DilithiumService {
         }
     }
 
-    async deployContract(abiPath: string, provider: JsonRpcProvider, privateKey: string,args = []) {
+    async deployContract(abiPath: string, provider: JsonRpcProvider, privateKey:string,args = []) {
         const info = JSON.parse(fs.readFileSync(abiPath, 'utf8'));
         const wallet = new Wallet(privateKey, provider)
         let result
@@ -156,11 +156,73 @@ export class DilithiumService {
         const mat1Address = vecResults[2].getAddress()
         const mat2Address = vecResults[3].getAddress()
         const mat3Address = vecResults[4].getAddress()
-        const addressList = await Promise.all([t1Address, mat0Address, mat1Address, mat2Address, mat3Address])
+        const addressList = await Promise.all([mat0Address, mat1Address, mat2Address, mat3Address, t1Address])
         const publicKeyPath = path.join(this.contractRootPath, 'out/publicKey.sol/DilithiumPublicKey.json')
         const result = await this.deployContract(publicKeyPath, provider, this.privateKey ,addressList)
         const publicKeyAddress = await result.getAddress();
         return publicKeyAddress
+    }
+
+    // async deployPublicKey(chainId: number) {
+    //     const provider = this.getProvider(chainId)
+    //     //deploy public Key
+    //     const t1Path = path.join(this.contractRootPath, 'out/publicKey.sol/PKT1.json')
+    //     const t1Result = await this.deployContract(t1Path, provider)
+    //     const t1Address = await t1Result.getAddress()
+    //     const mat0Path = path.join(this.contractRootPath, 'out/publicKey.sol/PKMAT0.json')
+    //     const mat0Result = await this.deployContract(mat0Path, provider)
+    //     const mat0Address = await mat0Result.getAddress()
+    //     const mat1Path = path.join(this.contractRootPath, 'out/publicKey.sol/PKMAT1.json')
+    //     const mat1Result = await this.deployContract(mat1Path, provider)
+    //     const mat1Address = await mat1Result.getAddress()
+    //     const mat2Path = path.join(this.contractRootPath, 'out/publicKey.sol/PKMAT2.json')
+    //     const mat2Result = await this.deployContract(mat2Path, provider)
+    //     const mat2Address = await mat2Result.getAddress()
+    //     const mat3Path = path.join(this.contractRootPath, 'out/publicKey.sol/PKMAT3.json')
+    //     const mat3Result = await this.deployContract(mat3Path, provider)
+    //     const mat3Address = await mat3Result.getAddress()
+
+    //     const publicKeyPath = path.join(this.contractRootPath, 'out/publicKey.sol/DilithiumPublicKey.json')
+        
+    //     const result = await this.deployContract(publicKeyPath, provider, [mat0Address, mat1Address, mat2Address, mat3Address, t1Address])
+    //     const publicKeyAddress = await result.getAddress();
+    //     return publicKeyAddress
+    // }
+
+    async readPublicKey(chainId: number, publicKeyAddress: string) {
+        const provider = this.getProvider(chainId);
+        const publicKeyPath = path.join(this.contractRootPath, 'out/publicKey.sol/DilithiumPublicKey.json')
+        const abi = JSON.parse(fs.readFileSync(publicKeyPath, 'utf8')).abi;
+        console.log(abi)
+        const factory = new ethers.Contract(publicKeyAddress, abi, provider)
+        const publicKey = await factory.expandedPublicKey()
+        return publicKey
+    }
+
+    async debug(chainId: number) {
+        const provider = this.getProvider(chainId);
+        const t1Path = path.join(this.contractRootPath, 'out/publicKey.sol/PKT1.json')
+        const t1abi = JSON.parse(fs.readFileSync(t1Path, 'utf8')).abi;
+        const t1 = new ethers.Contract('0x364fd445985F76cf3E49ACD3E35D166082ff76d5', t1abi, provider)
+        console.log(await t1.t1())
+        const mat0Path = path.join(this.contractRootPath, 'out/publicKey.sol/PKMAT0.json')
+        const mat0abi = JSON.parse(fs.readFileSync(mat0Path, 'utf8')).abi;
+        const mat0 = new ethers.Contract('0xad77036Cd480a4F50F91Df0F99283F1C64047d96', mat0abi, provider)
+        console.log(await mat0.mat0())
+        const mat1Path = path.join(this.contractRootPath, 'out/publicKey.sol/PKMAT1.json')
+        const mat1abi = JSON.parse(fs.readFileSync(mat1Path, 'utf8')).abi;
+        const mat1 = new ethers.Contract('0x067FD81882d38607ce6E77A96309f223B480Ed25', mat1abi, provider)
+        console.log(await mat1.mat1())
+        const mat2Path = path.join(this.contractRootPath, 'out/publicKey.sol/PKMAT2.json')
+        const mat2abi = JSON.parse(fs.readFileSync(mat2Path, 'utf8')).abi;
+        const mat2 = new ethers.Contract('0x045b2280640A05eaCf0d3EE538D5C138aD570e11', mat2abi, provider)
+        console.log(await mat2.mat2())
+        const mat3Path = path.join(this.contractRootPath, 'out/publicKey.sol/PKMAT3.json')
+        const mat3abi = JSON.parse(fs.readFileSync(mat3Path, 'utf8')).abi;
+        const mat3 = new ethers.Contract('0x323D06fb7DC2636fcffd70a673F26885a5a35945', mat3abi, provider)
+        console.log(await mat3.mat3())
+        const publicKey = await this.readPublicKey(chainId, '0xd7467390aBAcd2752a43a90359D51f7c07c2744c')
+        console.log(publicKey)
     }
 
     async createNewAccount(chainId: number, publicKeyAddress: string) {
