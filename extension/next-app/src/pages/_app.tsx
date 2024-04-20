@@ -7,6 +7,7 @@ import Head from "next/head";
 import { WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { config } from "../constants/web3";
+import { NImage } from "../constants/image";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = ({ Component, pageProps }: AppProps) => {
       <Head>
         <title>Quasar</title>
         <meta name="description" content="Quantum Secure Smart Account" />
+        <link rel="icon" type="image/png" href={NImage.ICONBG} />
       </Head>
       {typeof window === "undefined" || !showChild ? (
         <></>
