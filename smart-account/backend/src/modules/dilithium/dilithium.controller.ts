@@ -10,5 +10,6 @@ export class DilithiumController {
   @Get()
   async test() {
     this.dilithiumService.buildContract();
+    // await this.dilithiumService.deployContract();
   }
 }

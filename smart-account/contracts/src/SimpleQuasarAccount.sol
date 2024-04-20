@@ -8,7 +8,9 @@ import "@tetrationlab/dilithium/Packing.sol";
 contract SimpleQuasarAccount {
     IDilithiumPublicKey public publicKey;
 
-    constructor() {}
+    constructor() {
+        
+    }
 
     function initialize(IDilithiumPublicKey _publicKey) external {
         if (address(publicKey) != address(0)) {
