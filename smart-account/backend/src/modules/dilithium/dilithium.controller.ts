@@ -32,7 +32,10 @@ export class DilithiumController {
   async execute(@Body() dto: ExecuteDto, @Param('chainId') chainId: number){
     try {
         const result = await this.dilithiumService.execute(Number(chainId), dto)
-        return result
+        return {
+            statusCode: 200,
+            txhash: result
+        }
     } catch (err) {
         throw new HttpException(err, HttpStatus.BAD_REQUEST);
     }

@@ -245,13 +245,12 @@ export class DilithiumService {
             const tx = await wallet.sendTransaction({
                 data: dto.calldata,
                 to: dto.target,
-                gasPrice: 0,
                 value: 0,
-                maxPriorityFeePerGas: 0,
-                maxFeePerGas: 0
+                chainId: BigInt(chainId),
             })
             return tx.hash
         } catch (err) {
+            console.log(err)
             throw err.shortMessage
         }
     }
