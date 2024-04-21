@@ -1,10 +1,10 @@
 import { execSync } from 'child_process';
 import * as fs from 'fs';
-import { ContractFactory, JsonRpcProvider, Wallet, ethers } from 'ethers';
+import { AbiCoder, ContractFactory, JsonRpcProvider, Wallet, ethers, keccak256, solidityPacked } from 'ethers';
 import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 import * as path from 'path';
-import { ExpandedPublicKeyDto } from './dto/pubkey.dto';
+import { ExpandedPublicKeyDto, PolyVec } from './dto/pubkey.dto';
 import { ExecuteDto } from './dto/execute.dto';
 
 @Injectable()
@@ -24,6 +24,9 @@ export class DilithiumService {
     gnosisFactory: string;
     availRpc: string;
     availFactory: string;
+
+    // mapping publicKeys to their address
+    pkMap: Record<string, {publicKeyAddress: string, accountAddress: string}> = {}
 
     constructor(
         private readonly configService: ConfigService,
@@ -194,7 +197,6 @@ export class DilithiumService {
         const provider = this.getProvider(chainId);
         const publicKeyPath = path.join(this.contractRootPath, 'out/publicKey.sol/DilithiumPublicKey.json')
         const abi = JSON.parse(fs.readFileSync(publicKeyPath, 'utf8')).abi;
-        console.log(abi)
         const factory = new ethers.Contract(publicKeyAddress, abi, provider)
         const publicKey = await factory.expandedPublicKey()
         return publicKey
@@ -253,5 +255,46 @@ export class DilithiumService {
             console.log(err)
             throw err.shortMessage
         }
+    }
+
+    encodePolyVec(polyVec: PolyVec) {
+        const vec = polyVec.vec.map((poly) => [poly.coeffs])
+        return [vec]
+    }
+
+    dumbCheckAccount(hash: string) {
+        return this.pkMap[hash]
+    }
+
+    dumbGenPkHash(chainId: number, dto: ExpandedPublicKeyDto): string {
+        const text = chainId.toString() + JSON.stringify(dto)
+        const hash = keccak256(solidityPacked(['string'], [text]))
+        console.log(hash)
+        return hash
+    }
+
+    dumbSavePkHash(hash: string, publicKeyAddress: string,accountAddress: string) {
+        this.pkMap[hash] = {
+            publicKeyAddress: publicKeyAddress,
+            accountAddress: accountAddress
+        }
+    }
+
+    async checkAccount(chainId: number, dto: ExpandedPublicKeyDto) {
+        
+        // // encode to data
+        // const publicKey = await this.readPublicKey(chainId, '0xe6e04b0483a394fc5925efcfcb19f612e0aab295')
+        // const encoder = new AbiCoder()
+        // // encoder.encode(publicKey)
+
+
+        // // console.log(publicKey)
+        // // console.log(dto)
+        // const packed = `0x` + Buffer.from(dto.packed).toString('hex')
+        // // console.log(packed)
+        // const t1 = this.encodePolyVec(dto.t1)
+        // const mat = dto.mat.map(x => this.encodePolyVec(x))
+        // // console.log(publicKey[2][0])
+        // // console.log(t1[0])
     }
 }
