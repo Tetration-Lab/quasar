@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { Injectable } from '@nestjs/common';
 import * as path from 'path';
 import { ExpandedPublicKeyDto } from './dto/pubkey.dto';
+import { ExecuteDto } from './dto/execute.dto';
 
 @Injectable()
 export class DilithiumService {
@@ -235,5 +236,18 @@ export class DilithiumService {
         const log = factory.interface.parseLog(receipt.logs[0])
         const accountAddress = log.args[0]
         return accountAddress
+    }
+
+    async execute(chainId: number, dto: ExecuteDto) {
+        const provider = this.getProvider(chainId);
+        const wallet = new Wallet(this.privateKey, provider)
+        const tx = await wallet.sendTransaction({
+            data: dto.calldata,
+            to: dto.target,
+            gasPrice: 0,
+            value: 0
+        })
+        const receipt = await tx.wait()
+        return receipt
     }
 }

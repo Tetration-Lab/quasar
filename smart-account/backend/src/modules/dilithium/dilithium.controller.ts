@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common'
 import { DilithiumService } from './dilithium.service';
 import { ExpandedPublicKeyDto } from './dto/pubkey.dto';
+import { ExecuteDto } from './dto/execute.dto';
 
 @Controller('dilithium')
 export class DilithiumController {
@@ -27,9 +28,14 @@ export class DilithiumController {
     }
   }
 
+  @Post('execute/:chainId')
+  async execute(@Body() dto: ExecuteDto, @Param('chainId') chainId: number){
+    const receipt = await this.dilithiumService.execute(Number(chainId), dto)
+    return receipt
+  }
+
   @Get('publicKey/:chainId/:address')
   async getPublicKey(@Param('chainId') chainId: number, @Param('address') address: string){
-    await this.dilithiumService.debug(Number(chainId))
-    // return await this.dilithiumService.readPublicKey(Number(chainId), address)
+    return await this.dilithiumService.readPublicKey(Number(chainId), address)
   }
 }
