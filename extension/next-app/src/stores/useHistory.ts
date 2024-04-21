@@ -7,12 +7,24 @@ interface IHistory {
   history: {
     [chainId: number]: Hex[];
   };
+  addHistory: (chainId: number, txHash: Hex) => void;
 }
 
 export const useHistory = create(
   persist<IHistory>(
     (set, get) => ({
       history: {},
+      addHistory: (chainId, txHash) => {
+        set((state) => {
+          const history = state.history[chainId] || [];
+          return {
+            history: {
+              ...state.history,
+              [chainId]: [txHash, ...history],
+            },
+          };
+        });
+      },
     }),
     {
       name: "history",

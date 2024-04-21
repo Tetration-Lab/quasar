@@ -19,9 +19,16 @@ import {
   Address,
   Hex,
   checksumAddress,
+  encodeAbiParameters,
+  encodeFunctionData,
   formatEther,
   formatGwei,
   fromHex,
+  keccak256,
+  parseAbi,
+  parseAbiParameters,
+  toBytes,
+  toHex,
 } from "viem";
 import {
   LuAlertCircle,
@@ -34,17 +41,21 @@ import { openInNewTab } from "../../utils";
 import { usePrice } from "../../stores/usePrice";
 import numbro from "numbro";
 import { RandomAvatar } from "react-random-avatars";
-import { approve, reject } from "../../stores/chrome";
+import { approve, reject, sendData } from "../../stores/chrome";
+import { useCallback } from "react";
+import { sendProxyTransaction } from "../../services/account";
+import { useHistory } from "../../stores/useHistory";
 
 export const SendPage = () => {
   const router = useRouter();
   const to = checksumAddress(router.query.to as Address);
-  const data = router.query.data as string;
+  const data = router.query.data as Hex;
   const value = fromHex(router.query.value as Hex, "bigint");
   const rId = router.query.rid as string;
 
   const acc = useAcc();
   const price = usePrice();
+  const history = useHistory();
 
   const balance = useBalance({
     address: acc.account.address,
@@ -65,6 +76,40 @@ export const SendPage = () => {
       retry: 1,
     },
   });
+
+  const sendMessage = useCallback(async () => {
+    const dilithium = await import("pqc_dilithium");
+    const keys = dilithium.Keys.derive(toBytes(acc.account.mnemonic));
+    const message = keccak256(
+      encodeAbiParameters(parseAbiParameters("address, uint, bytes"), [
+        to,
+        value,
+        data,
+      ])
+    );
+    const signature = toHex(keys.sign_bytes(fromHex(message, "bytes"), true));
+    const calldata = encodeFunctionData({
+      abi: parseAbi([
+        "function execute(address dest, uint256 value, bytes calldata func, bytes calldata signature)",
+      ]),
+      functionName: "execute",
+      args: [to, value, data, signature],
+    });
+    const txHash = await sendProxyTransaction(
+      acc.account.address,
+      calldata,
+      acc.connectedNetwork.id
+    );
+    history.addHistory(acc.connectedNetwork.id, txHash);
+    return txHash;
+  }, [
+    acc.account,
+    to,
+    data,
+    value,
+    acc.connectedNetwork.id,
+    history.addHistory,
+  ]);
 
   return (
     <Stack h="100%" overflowY="scroll">
@@ -233,7 +278,9 @@ export const SendPage = () => {
         >
           <Button
             colorScheme="green"
-            onClick={() => {
+            onClick={async () => {
+              const hash = await sendMessage();
+              await sendData(rId, hash);
               approve(rId);
             }}
           >
