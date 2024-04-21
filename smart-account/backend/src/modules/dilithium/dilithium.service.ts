@@ -246,11 +246,13 @@ export class DilithiumService {
                 data: dto.calldata,
                 to: dto.target,
                 gasPrice: 0,
-                value: 0
+                value: 0,
+                maxPriorityFeePerGas: 0,
+                maxFeePerGas: 0
             })
             return tx.hash
         } catch (err) {
-            return err
+            throw err.shortMessage
         }
     }
 }

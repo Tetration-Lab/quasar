@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Query, Req, UseGuards } from '@nestjs/common'
 import { DilithiumService } from './dilithium.service';
 import { ExpandedPublicKeyDto } from './dto/pubkey.dto';
 import { ExecuteDto } from './dto/execute.dto';
@@ -30,8 +30,12 @@ export class DilithiumController {
 
   @Post('execute/:chainId')
   async execute(@Body() dto: ExecuteDto, @Param('chainId') chainId: number){
-    const result = await this.dilithiumService.execute(Number(chainId), dto)
-    return result
+    try {
+        const result = await this.dilithiumService.execute(Number(chainId), dto)
+        return result
+    } catch (err) {
+        throw new HttpException(err, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Get('publicKey/:chainId/:address')
