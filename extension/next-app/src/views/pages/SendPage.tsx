@@ -42,7 +42,7 @@ import { usePrice } from "../../stores/usePrice";
 import numbro from "numbro";
 import { RandomAvatar } from "react-random-avatars";
 import { approve, reject, sendData } from "../../stores/chrome";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { sendProxyTransaction } from "../../services/account";
 import { useHistory } from "../../stores/useHistory";
 
@@ -77,31 +77,41 @@ export const SendPage = () => {
     },
   });
 
+  const [isSending, setIsSending] = useState(false);
   const sendMessage = useCallback(async () => {
-    const dilithium = await import("pqc_dilithium");
-    const keys = dilithium.Keys.derive(toBytes(acc.account.mnemonic));
-    const message = keccak256(
-      encodeAbiParameters(parseAbiParameters("address, uint, bytes"), [
-        to,
-        value,
-        data,
-      ])
-    );
-    const signature = toHex(keys.sign_bytes(fromHex(message, "bytes"), true));
-    const calldata = encodeFunctionData({
-      abi: parseAbi([
-        "function execute(address dest, uint256 value, bytes calldata func, bytes calldata signature)",
-      ]),
-      functionName: "execute",
-      args: [to, value, data, signature],
-    });
-    const txHash = await sendProxyTransaction(
-      acc.account.address,
-      calldata,
-      acc.connectedNetwork.id
-    );
-    history.addHistory(acc.connectedNetwork.id, txHash);
-    return txHash;
+    try {
+      setIsSending(true);
+      const dilithium = await import("pqc_dilithium");
+      const keys = dilithium.Keys.derive(toBytes(acc.account.mnemonic));
+      const message = keccak256(
+        encodeAbiParameters(parseAbiParameters("address, uint, bytes"), [
+          to,
+          value,
+          data,
+        ])
+      );
+      const signature = toHex(
+        keys.sign_bytes(fromHex(message, "bytes"), false)
+      );
+      const calldata = encodeFunctionData({
+        abi: parseAbi([
+          "function execute(address dest, uint256 value, bytes calldata func, bytes calldata signature)",
+        ]),
+        functionName: "execute",
+        args: [to, value, data, signature],
+      });
+      const txHash = await sendProxyTransaction(
+        acc.account.address,
+        calldata,
+        acc.connectedNetwork.id
+      );
+      history.addHistory(acc.connectedNetwork.id, txHash);
+      setIsSending(false);
+      return txHash;
+    } catch (e) {
+      setIsSending(false);
+      throw e;
+    }
   }, [
     acc.account,
     to,
@@ -128,8 +138,9 @@ export const SendPage = () => {
             <Text>
               {numbro(formatEther(value)).format({
                 thousandSeparated: true,
-                mantissa: 4,
+                mantissa: 18,
                 trimMantissa: true,
+                optionalMantissa: true,
               })}{" "}
               {acc.connectedNetwork.nativeCurrency.symbol}
             </Text>
@@ -148,8 +159,9 @@ export const SendPage = () => {
               Your balance{" "}
               {numbro(formatEther(balance.data?.value || 0n)).format({
                 thousandSeparated: true,
-                mantissa: 4,
+                mantissa: 18,
                 trimMantissa: true,
+                optionalMantissa: true,
               })}{" "}
               {acc.connectedNetwork.nativeCurrency.symbol}
             </Text>
@@ -278,6 +290,8 @@ export const SendPage = () => {
         >
           <Button
             colorScheme="green"
+            isDisabled={eg.isFetching || !!eg.failureReason}
+            isLoading={isSending}
             onClick={async () => {
               const hash = await sendMessage();
               await sendData(rId, hash);
@@ -286,7 +300,18 @@ export const SendPage = () => {
           >
             Sign And Create
           </Button>
-          <Button onClick={() => reject(rId)}>Cancel</Button>
+          <Button
+            onClick={() => {
+              history.addHistory(
+                acc.connectedNetwork.id,
+                "0x9d8ae7ad2080a01c319226c834f6fe2dde25d71a9a18ad04e3f9dcb85b74b7df"
+              );
+              reject(rId);
+            }}
+            isDisabled={isSending}
+          >
+            Cancel
+          </Button>
         </HStack>
       </Stack>
     </Stack>

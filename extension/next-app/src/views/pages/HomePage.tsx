@@ -26,12 +26,15 @@ import { useAcc } from "../../stores/useAcc";
 import { NImage } from "../../constants/image";
 import { SelectChainMenu } from "../../components/common/SelectChainMenu";
 import { useMemo } from "react";
-import { useBalance } from "wagmi";
+import { useBalance, useTransactionConfirmations } from "wagmi";
 import { formatEther } from "viem";
 import { openInNewTab } from "../../utils";
+import { useHistory } from "../../stores/useHistory";
 
 export const HomePage = () => {
   const acc = useAcc();
+  const history = useHistory();
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const enabled = useMemo(() => {
@@ -42,6 +45,10 @@ export const HomePage = () => {
     address: acc.account?.address,
     chainId: acc.connectedNetwork.id,
   });
+
+  const txHistory = useMemo(() => {
+    return (history.history[acc.connectedNetwork.id] || []).slice(0, 5);
+  }, [history.history, acc.connectedNetwork.id]);
 
   if (!acc.account) {
     return (
@@ -161,11 +168,59 @@ export const HomePage = () => {
 
         <Stack>
           <Text textDecor="underline">Transaction History</Text>
-          <Stack align="center">
-            <Text as="i" color="gray.400" fontWeight="medium" mt={2}>
-              You have no transasctions yet
-            </Text>
-          </Stack>
+          {txHistory.length === 0 ? (
+            <Stack align="center">
+              <Text as="i" color="gray.400" fontWeight="medium" mt={2}>
+                You have no transasctions yet
+              </Text>
+            </Stack>
+          ) : (
+            <Stack>
+              {txHistory.map((tx, i) => {
+                const { data } = useTransactionConfirmations({
+                  chainId: acc.connectedNetwork.id,
+                  hash: tx,
+                });
+                const conf = data || 0n;
+
+                return (
+                  <HStack
+                    key={`${tx}-${i}`}
+                    rounded="md"
+                    p={2}
+                    border="1px solid"
+                    borderColor="gray.200"
+                  >
+                    <Text fontWeight="medium">
+                      {tx.slice(0, 6)}..{tx.slice(tx.length - 6, tx.length)}
+                    </Text>
+                    <Spacer />
+                    <IconButton
+                      icon={<Icon as={LuCopy} />}
+                      aria-label="Copy Address"
+                      size="xs"
+                      variant="outline"
+                      onClick={() => navigator.clipboard.writeText(tx)}
+                    />
+                    <IconButton
+                      icon={<Icon as={LuExternalLink} />}
+                      aria-label="Open Explorer"
+                      size="xs"
+                      variant="outline"
+                      onClick={() => {
+                        const url = `${acc.connectedNetwork.blockExplorers.default.url}/tx/${tx}`;
+                        openInNewTab(url);
+                      }}
+                    />
+                    <Circle
+                      size="12px"
+                      bg={conf >= 1 ? "green.400" : "red.400"}
+                    />
+                  </HStack>
+                );
+              })}
+            </Stack>
+          )}
         </Stack>
 
         <Spacer />

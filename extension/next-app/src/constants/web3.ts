@@ -34,8 +34,8 @@ const opAvailSepolia = defineChain({
 
 export const chains = [
   {
-    ...opAvailSepolia,
-    icon: "/next-assets/chains/avail.png",
+    ...arbitrumSepolia,
+    icon: "/next-assets/chains/arb.svg",
     isDisabled: false,
   },
   {
@@ -44,8 +44,8 @@ export const chains = [
     isDisabled: false,
   },
   {
-    ...arbitrumSepolia,
-    icon: "/next-assets/chains/arb.svg",
+    ...opAvailSepolia,
+    icon: "/next-assets/chains/avail.png",
     isDisabled: false,
   },
   {
@@ -60,9 +60,9 @@ export const chains = [
 export const config = createConfig({
   chains: [opAvailSepolia, sepolia, arbitrumSepolia, gnosisChiado],
   transports: {
-    [opAvailSepolia.id]: http(),
-    [sepolia.id]: http(),
     [arbitrumSepolia.id]: http(),
+    [sepolia.id]: http(),
+    [opAvailSepolia.id]: http(),
     [gnosisChiado.id]: http(),
   },
 });
