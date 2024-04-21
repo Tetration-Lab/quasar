@@ -1,4 +1,7 @@
 # Quasar, a post-quantum AA
+
+> This is a contribution to Post Quantum Ethereum world!, see https://github.com/Tetration-Lab/post-quantum-ethereum/
+
 Quantum computers will be here one day. Without proper preparation, there will be significant damage. Quasar, a post-quantum account abstraction (PQAA), is part of a wider effort to prepare for post-quantum Ethereum.
 
 ## why
