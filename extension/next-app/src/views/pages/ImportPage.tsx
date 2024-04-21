@@ -64,6 +64,7 @@ export const ImportPage = () => {
       <Input type="password" onChange={(e) => setPassword(e.target.value)} />
       <Button
         onClick={imp}
+        isLoading={acc.isSettingAccount}
         isDisabled={mnemonicInput.length === 0 || password.length === 0}
       >
         Import Wallet
