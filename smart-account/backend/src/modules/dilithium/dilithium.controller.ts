@@ -30,8 +30,8 @@ export class DilithiumController {
 
   @Post('execute/:chainId')
   async execute(@Body() dto: ExecuteDto, @Param('chainId') chainId: number){
-    const receipt = await this.dilithiumService.execute(Number(chainId), dto)
-    return receipt
+    const result = await this.dilithiumService.execute(Number(chainId), dto)
+    return result
   }
 
   @Get('publicKey/:chainId/:address')

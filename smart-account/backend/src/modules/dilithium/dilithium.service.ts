@@ -241,13 +241,16 @@ export class DilithiumService {
     async execute(chainId: number, dto: ExecuteDto) {
         const provider = this.getProvider(chainId);
         const wallet = new Wallet(this.privateKey, provider)
-        const tx = await wallet.sendTransaction({
-            data: dto.calldata,
-            to: dto.target,
-            gasPrice: 0,
-            value: 0
-        })
-        const receipt = await tx.wait()
-        return receipt
+        try {
+            const tx = await wallet.sendTransaction({
+                data: dto.calldata,
+                to: dto.target,
+                gasPrice: 0,
+                value: 0
+            })
+            return tx.hash
+        } catch (err) {
+            return err
+        }
     }
 }
