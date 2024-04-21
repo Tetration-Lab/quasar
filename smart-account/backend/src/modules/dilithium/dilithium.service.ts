@@ -249,6 +249,24 @@ export class DilithiumService {
                 to: dto.target,
                 value: 0,
                 chainId: BigInt(chainId),
+                gasLimit: BigInt(35000000)
+            })
+            return tx.hash
+        } catch (err) {
+            console.log(err)
+            throw err.shortMessage
+        }
+    }
+
+    async execute2(chainId: number, dto: ExecuteDto) {
+        const provider = this.getProvider(chainId);
+        const wallet = new Wallet(this.privateKey, provider)
+        try {
+            const tx = await wallet.sendTransaction({
+                data: dto.calldata,
+                to: dto.target,
+                value: 0,
+                chainId: BigInt(chainId),
             })
             return tx.hash
         } catch (err) {
