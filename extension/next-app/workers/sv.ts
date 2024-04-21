@@ -56,6 +56,27 @@ const signMessagePopup = async (hex: string, rid: string) => {
   });
 };
 
+const sendTxPopup = async (
+  to: string,
+  value: string,
+  data: string,
+  rid: string
+) => {
+  return new Promise<[boolean, string]>(async (resolve, reject) => {
+    const win = await chrome.windows.create({
+      url: `send.html?to=${to}&value=${value}&data=${data}&rid=${rid}`,
+      type: "popup",
+      width: 350,
+      height: 600,
+    });
+
+    userReject[String(win.id)] = reject;
+    userApprove[String(win.id)] = (b: boolean) => resolve([b, String(win.id)]);
+    rIdWin[String(win.id)] = String(rid);
+    rIdData[String(win.id)] = {};
+  });
+};
+
 chrome.runtime.onMessage.addListener(
   (message: RequestArgument, sender, sendResponse) => {
     if (chrome.runtime.lastError) {
@@ -132,6 +153,55 @@ chrome.runtime.onMessage.addListener(
             }
 
             sendResponse(await signMessage(data));
+          }
+          case "eth_sendTransaction": {
+            const url = new URL(message.website);
+            let isConnected = await isWebsiteConnected(url.origin);
+            if (!isConnected) {
+              isConnected = await connectWalletPopup(
+                url.origin,
+                message.resId || "ra"
+              );
+            }
+
+            if (!isConnected) {
+              sendResponse({
+                error: true,
+                code: rpcError.USER_REJECTED,
+                message: "User rejected",
+              });
+              return;
+            }
+
+            const params = message?.params?.[0] || {};
+            if (!params.to || !params.value || !params.data) {
+              sendResponse({
+                error: true,
+                code: rpcError.INVALID_PARAM,
+                message: "Invalid params",
+              });
+              return;
+            }
+
+            const [isSent, winId] = await sendTxPopup(
+              params.to,
+              params.value,
+              params.data,
+              message.resId || "ra"
+            );
+
+            const hash = rIdData[winId];
+
+            if (!isSent || !hash) {
+              sendResponse({
+                error: true,
+                code: rpcError.USER_REJECTED,
+                message: "User rejected",
+              });
+              return;
+            }
+
+            sendResponse(hash);
           }
           case "eth_requestAccounts": {
             const url = new URL(message.website);

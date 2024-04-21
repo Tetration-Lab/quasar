@@ -24,6 +24,28 @@ export const reject = (rId: string) => {
   );
 };
 
+export const sendData = (rId: string, data: any) => {
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage(
+      {
+        method: "wallet_send_data",
+        resId: rId,
+        data,
+        type: "WALLET_CONTENT_MSG",
+      },
+      (r) => {
+        if (chrome.runtime.lastError) {
+          console.warn(
+            "LOC5: Error sending message:",
+            chrome.runtime.lastError
+          );
+        }
+        resolve(r);
+      }
+    );
+  });
+};
+
 const chromeEnabled = !!(
   typeof chrome !== "undefined" &&
   chrome.storage &&

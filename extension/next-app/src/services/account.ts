@@ -1,4 +1,4 @@
-import { toBytes } from "viem";
+import { Hex, toBytes } from "viem";
 import axios from "axios";
 
 export const createAccountOnChain = async (
@@ -18,4 +18,24 @@ export const createAccountOnChain = async (
     address: response.data.accountAddress,
     epk: keyJson,
   };
+};
+
+export const sendProxyTransaction = async (
+  to: string,
+  calldata: string,
+  chainId: number
+) => {
+  const response = await axios.post(
+    `${process.env.NEXT_PUBLIC_API_URL}/execute/${chainId}`,
+    {
+      calldata,
+      target: to,
+    }
+  );
+
+  if (response.data.error) {
+    throw new Error(response.data.error);
+  }
+
+  return response.data.txhash as Hex;
 };

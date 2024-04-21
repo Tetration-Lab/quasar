@@ -41,13 +41,14 @@ export const ConnectPage = () => {
         align="center"
         fontWeight="medium"
         textAlign="center"
+        fontSize="sm"
+        color="gray.400"
         sx={{
           "& > *": {
             p: 2,
             rounded: "md",
-            bg: "orange.100",
-            border: "2px solid",
-            borderColor: "orange.200",
+            border: "1px solid",
+            borderColor: "gray.200",
             w: "full",
           },
         }}

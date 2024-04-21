@@ -2,6 +2,7 @@ import { BoxProps, Container, Spinner, Stack } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useAcc } from "../../stores/useAcc";
 import { useRouter } from "next/router";
+import { usePrice } from "../../stores/usePrice";
 
 export const Section = (props: BoxProps) => {
   const [isLocked, noAccount] = useAcc(
@@ -18,6 +19,12 @@ export const Section = (props: BoxProps) => {
       router.push("/");
     }
   }, [router.isReady, router.asPath, noAccount, isLocked]);
+
+  const price = usePrice();
+
+  useEffect(() => {
+    price.fetchPrice();
+  }, [price.fetchPrice]);
 
   if (!router.isReady)
     return (

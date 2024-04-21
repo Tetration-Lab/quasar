@@ -42,4 +42,6 @@ contract SimpleQuasarAccount {
         require(verify(signature, keccak256(abi.encode(dest, value, func))), "Invalid signature");
         _call(dest, value, func);
     }
+
+    receive() external payable {}
 }

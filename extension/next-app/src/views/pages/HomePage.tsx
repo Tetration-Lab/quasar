@@ -28,6 +28,7 @@ import { SelectChainMenu } from "../../components/common/SelectChainMenu";
 import { useMemo } from "react";
 import { useBalance } from "wagmi";
 import { formatEther } from "viem";
+import { openInNewTab } from "../../utils";
 
 export const HomePage = () => {
   const acc = useAcc();
@@ -126,11 +127,7 @@ export const HomePage = () => {
                 variant="outline"
                 onClick={() => {
                   const url = `${acc.connectedNetwork.blockExplorers.default.url}/address/${acc.account.address}`;
-                  if (typeof chrome !== "undefined" && chrome.tabs)
-                    chrome.tabs.create({
-                      url,
-                    });
-                  else window.open(url, "_blank").focus();
+                  openInNewTab(url);
                 }}
               />
             </>

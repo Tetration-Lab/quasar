@@ -33,7 +33,7 @@ contract SimpleQuasarAccountFactory {
         address account = Create2.deploy(
             0, pkHash, abi.encodePacked(type(SimpleQuasarAccount).creationCode, abi.encode(dilithium, packing))
         );
-        SimpleQuasarAccount(account).initialize(publicKey);
+        SimpleQuasarAccount(payable(account)).initialize(publicKey);
         created[account] = true;
         registry[pkHash] = [account, address(publicKey)];
 
