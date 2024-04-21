@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useAcc } from "../../stores/useAcc";
-import { useEstimateGas, useGasPrice } from "wagmi";
+import { useBalance, useEstimateGas, useGasPrice } from "wagmi";
 import {
   Address,
   Hex,
@@ -46,6 +46,10 @@ export const SendPage = () => {
   const acc = useAcc();
   const price = usePrice();
 
+  const balance = useBalance({
+    address: acc.account.address,
+    chainId: acc.connectedNetwork.id,
+  });
   const gasPrice = useGasPrice({
     chainId: acc.connectedNetwork.id,
   });
@@ -69,10 +73,20 @@ export const SendPage = () => {
       <Heading size="md">{data === "0x" ? `Send Token` : "Call"}</Heading>
       <Stack fontWeight="medium">
         <HStack align="start">
+          <Text w={20}>Chain</Text>
+          <Image src={(acc.connectedNetwork as any).icon} boxSize="20px" />
+          <Text as="b">{acc.connectedNetwork.name}</Text>
+        </HStack>
+        <HStack align="start">
           <Text w={20}>Value</Text>
           <Stack spacing={0}>
             <Text>
-              {formatEther(value)} {acc.connectedNetwork.nativeCurrency.symbol}
+              {numbro(formatEther(value)).format({
+                thousandSeparated: true,
+                mantissa: 4,
+                trimMantissa: true,
+              })}{" "}
+              {acc.connectedNetwork.nativeCurrency.symbol}
             </Text>
             <Text fontSize="sm" fontWeight="normal">
               ≈$
@@ -84,6 +98,15 @@ export const SendPage = () => {
                 mantissa: 4,
                 trimMantissa: true,
               })}
+            </Text>
+            <Text fontSize="sm" fontWeight="normal">
+              Your balance{" "}
+              {numbro(formatEther(balance.data?.value || 0n)).format({
+                thousandSeparated: true,
+                mantissa: 4,
+                trimMantissa: true,
+              })}{" "}
+              {acc.connectedNetwork.nativeCurrency.symbol}
             </Text>
           </Stack>
         </HStack>
