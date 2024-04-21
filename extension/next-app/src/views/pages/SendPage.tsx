@@ -302,10 +302,6 @@ export const SendPage = () => {
           </Button>
           <Button
             onClick={() => {
-              history.addHistory(
-                acc.connectedNetwork.id,
-                "0x9d8ae7ad2080a01c319226c834f6fe2dde25d71a9a18ad04e3f9dcb85b74b7df"
-              );
               reject(rId);
             }}
             isDisabled={isSending}
